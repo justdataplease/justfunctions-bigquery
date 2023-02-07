@@ -1,0 +1,32 @@
+type: function_sql
+category:
+  - STATISTICS
+  - percentile
+source:
+public: true
+description: "Find percentile of 'array'."
+arguments:
+  - name: arr
+    type: array<float64>
+    description:
+  - name: percentile
+    type: int
+    description:
+output:
+  name: percentile
+  type: float64
+  description:
+examples:
+  - description: ""
+    arguments:
+      - [ 1.2,2.3,3.2,4.2,5 ]
+    output: 3.2
+    region: ALL
+code: |
+  (
+  SELECT
+  COALESCE(arr[SAFE_OFFSET(CAST(ARRAY_LENGTH(arr)*percentile/100 AS INT)-1)],COALESCE(arr[SAFE_OFFSET (0)],999))
+  FROM (SELECT ARRAY_AGG(x IGNORE NULLS ORDER BY x) AS arr FROM UNNEST(arr) AS x)
+  )
+
+

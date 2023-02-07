@@ -1,0 +1,27 @@
+type: function_js
+category:
+  - NLP
+  - text
+  - stemmer
+tutorial: https://medium.com/mlearning-ai/extend-bigquery-nlp-armory-with-stemmers-995fae853b0e
+source: https://github.com/Apmats/greekstemmerjs
+github: https://github.com/justdataplease/bigquery-stemmers
+public: true
+description: "Returns the stem of the `string`. Supports Greek Language."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: stemmed_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "καλησπερα"
+    output: "ΚΑΛΗΣΠΕΡ"
+    region: ALL
+code: return utils.greekStemmer(string.toUpperCase());
+libraries:
+  - cloudstorage_url: stemmers.js

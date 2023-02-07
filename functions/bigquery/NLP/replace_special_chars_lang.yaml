@@ -1,0 +1,26 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Replace special characters in a `string` with `replacement`. Supports Latin, Greek, Chinese and Arabic characters."
+arguments:
+  - name: string
+    type: string
+    description:
+  - name: replacement
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "$幸福=Happiness▲ Ζωή and Радость الحب!!!"
+      - ""
+    output: "幸福Happiness Ζωή and Радость الحب"
+    region: ALL
+code: REGEXP_REPLACE(string, '''[^a-zA-Z0-9\\s\u0370-\u03ff\u1f00-\u1fff\\p{Han}\\p{Arabic}\\p{N}\\p{Cyrillic}]+''', replacement)

@@ -1,0 +1,23 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Remove extra whitespaces in a `string`."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "Hi     there\n."
+      - " "
+    output: "Hi there\n."
+    region: ALL
+code: REGEXP_REPLACE(string, r'\s+','')

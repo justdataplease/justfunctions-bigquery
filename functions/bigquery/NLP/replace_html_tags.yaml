@@ -1,0 +1,26 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Replace html tags in a `string` with `replacement`"
+arguments:
+  - name: string
+    type: string
+    description:
+  - name: replacement
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "<div class=\\'test\\'>hello world<a href=\\'#\\'>hello world<\\a><\\\\div>"
+      - " "
+    output: hello world hello world
+    region: ALL
+code: TRIM(REGEXP_REPLACE(string, r"<[^>]*>", replacement))

@@ -1,0 +1,27 @@
+type: function_js
+category:
+  - NLP
+  - text
+  - stemmer
+tutorial: https://medium.com/mlearning-ai/extend-bigquery-nlp-armory-with-stemmers-995fae853b0e
+source: https://github.com/Yomguithereal/talisman
+github: https://github.com/justdataplease/bigquery-stemmers
+public: true
+description: "Returns the stem of the `string`, using Lancaster Algorythm. Supports English Language."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: stemmed_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "replied"
+    output: "reply"
+    region: ALL
+code: return utils.lancasterStemmer(string);
+libraries:
+  - cloudstorage_url: stemmers.js

@@ -1,0 +1,22 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Remove accents from `string`."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "¿Dóndé Éstá Mí Ágúá?"
+    output: ¿Donde Esta Mi Agua?
+    region: ALL
+code: regexp_replace(normalize(string, nfd), r"\pm", '')

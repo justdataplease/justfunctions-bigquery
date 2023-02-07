@@ -1,0 +1,26 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Replace url patterns in a `string` with `replacement`."
+arguments:
+  - name: string
+    type: string
+    description:
+  - name: replacement
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "Google it https://www.google.com/ !"
+      - ""
+    output: "Google it !"
+    region: ALL
+code: REGEXP_REPLACE(string, r'((ftp|https?)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z0-9\&\.\!\%\/\?\:@\-_=#])*', replacement)

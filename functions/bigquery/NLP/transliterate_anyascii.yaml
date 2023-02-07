@@ -1,0 +1,27 @@
+type: function_js
+category:
+  - NLP
+  - text
+  - transliteration
+tutorial:
+source: https://github.com/anyascii/anyascii
+github: https://github.com/justdataplease/bigquery-transliteration
+public: true
+description: "Converts Unicode characters to their best ASCII representation."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: stemmed_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "καλημέρα"
+    output: "kalimera"
+    region: ALL
+code: return utils.anyAscii(string);
+libraries:
+  - cloudstorage_url: transliteration.js

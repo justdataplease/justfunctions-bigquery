@@ -1,0 +1,86 @@
+type: function_table_sql
+category:
+  - Spatial
+source:
+production: false
+description: "Lookups an ip address"
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - ""
+    output: ""
+    region: ALL
+code: |
+  (WITH sample_dataset AS (
+  SELECT ip_address FROM
+  UNNEST(SPLIT(ip_addresses,',')) ip_address
+  ),
+  -- Find IP address version and convert string IP address to binary format (bytes).
+  sample_dataset_1 AS (
+  SELECT
+  ip_address,
+  NET.SAFE_IP_FROM_STRING(ip_address) ip_address_in_bytes,
+  CASE BYTE_LENGTH(NET.SAFE_IP_FROM_STRING(ip_address))
+  WHEN 4 THEN 'IPv4'
+  WHEN 16 THEN 'IPv16'
+  ELSE 'other' END ip_address_version
+  FROM sample_dataset
+  ),
+  -----PROCESS IPV4 addresses
+  -- Select only IPv4 IP addresses
+  ipv4_addresses AS (
+  SELECT DISTINCT * FROM sample_dataset_1 WHERE ip_address_version='IPv4'
+  ),
+  -- Create all possible netmasks from 255.0.0.0 to 255.255.255.255
+  ipv4_netmasks AS (
+  SELECT mask FROM UNNEST(GENERATE_ARRAY(8,32)) mask
+  ),
+  -- Lookup addresses on MaxMind's Geolite2 Database
+  ipv4d_addresses AS (
+  SELECT * FROM
+  (
+  -- Find the network bin that identifies the network
+  -- to which ip address belongs
+  SELECT ip_address, ip_address_in_bytes & NET.IP_NET_MASK(4, mask) network_bin, mask
+  FROM ipv4_addresses
+  CROSS JOIN ipv4_netmasks
+  )
+  -- Keep what matches with MaxMind's Geolite2 Database
+  JOIN `justfunctions.eu.geolite2_city_ipv4` USING (network_bin, mask)
+  ),
+  -----PROCESS IPV6 addresses
+  -- Select only IPv6 IP addresses
+  ipv6_addresses AS (
+  SELECT DISTINCT * FROM sample_dataset_1 WHERE ip_address_version='IPv16'
+  ),
+  -- Create all possible netmasks from ffff:e000:: to ffff:ffff:ffff:ffff::
+  ipv6_netmasks AS (
+  SELECT mask FROM UNNEST(GENERATE_ARRAY(19,64)) mask
+  ),
+  -- Lookup addresses on MaxMind's Geolite2 Database
+  ipv6d_addresses AS (
+  SELECT * FROM
+  (
+  -- Find the network bin that identifies the network
+  -- to which ip address belongs
+  SELECT ip_address, ip_address_in_bytes & NET.IP_NET_MASK(16, mask) network_bin, mask
+  FROM ipv6_addresses
+  CROSS JOIN ipv6_netmasks
+  )
+  -- Keep what matches with MaxMind's Geolite2 Database
+  JOIN `justfunctions.eu.geolite2_city_ipv6` USING (network_bin, mask)
+  )
+  -- Combine results
+  SELECT * FROM ipv4d_addresses
+  UNION ALL
+  SELECT * FROM ipv6d_addresses))
+
+
