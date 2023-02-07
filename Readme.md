@@ -7,5 +7,5 @@ Deploy BigQuery Functions and create Airtable Documentation
 - Run deploy.py
 
 You can find the functions here:
-https://justdataplease.com/bigquery-justfunctions/
+https://justdataplease.com/justfunctions-bigquery/
 
