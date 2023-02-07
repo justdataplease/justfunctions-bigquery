@@ -1,0 +1,11 @@
+venv/
+.idea/
+.vscode/
+__pycache__/
+*.env
+penv/
+penv/*
+*.har
+*.qgz
+*.z
+secrets.py
