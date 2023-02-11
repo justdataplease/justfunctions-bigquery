@@ -1,6 +1,6 @@
 # JustFunctions - Advanced Open Source BigQuery UDFs
 
-You can find the functions here:
+A full list of functions can be found here:
 https://justdataplease.com/justfunctions-bigquery/
 
 How to deploy your own BigQuery Functions and create Airtable Documentation
