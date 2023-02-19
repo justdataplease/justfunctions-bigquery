@@ -1,0 +1,37 @@
+CREATE OR REPLACE FUNCTION `justfunctions.eu_maps.latlng_to_h3`(latitude FLOAT64, longitude FLOAT64, resolution INT64) RETURNS STRING DETERMINISTIC LANGUAGE js
+OPTIONS (library=["gs://justfunctions/bigquery-functions/h3.js"]) AS R"""
+if (longitude === null || latitude === null || resolution === null) {
+        return null;
+    }
+    return h3Lib.geoToH3(Number(latitude), Number(longitude), Number(resolution));
+""";
+
+CREATE OR REPLACE FUNCTION `justfunctions.eu_maps.h3_boundary`(index STRING) RETURNS STRING DETERMINISTIC LANGUAGE js
+OPTIONS (library=["gs://justfunctions/bigquery-functions/h3.js"]) AS R"""
+if (!index) {
+        return null;
+    }
+
+
+CREATE OR REPLACE FUNCTION `justfunctions.eu_maps.h3_to_parent`(index STRING, resolution INT64) RETURNS STRING DETERMINISTIC LANGUAGE js
+OPTIONS (library=["gs://justfunctions/bigquery-functions/h3.js"]) AS R"""
+if (!index) {
+        return null;
+    }
+    if (!h3Lib.h3IsValid(index)) {
+        return null;
+    }
+    return h3Lib.h3ToParent(index, Number(resolution));
+""";
+
+
+CREATE OR REPLACE FUNCTION `justfunctions.eu_maps.h3_to_children`(index STRING, resolution INT64) RETURNS ARRAY<STRING> DETERMINISTIC LANGUAGE js
+OPTIONS (library=["gs://justfunctions/bigquery-functions/h3.js"]) AS R"""
+if (!index) {
+        return null;
+    }
+    if (!h3Lib.h3IsValid(index)) {
+        return null;
+    }
+    return h3Lib.h3ToChildren(index, Number(resolution));
+""";
