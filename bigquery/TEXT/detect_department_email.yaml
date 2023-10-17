@@ -22,11 +22,11 @@ examples:
     region: ALL
 code: |
   ((
-       WITH A AS (SELECT SPLIT(email,"@")[offset(0)] email)
+       WITH A AS (SELECT SPLIT(email,"@")[offset(0)] email_part)
   
        SELECT 
        CASE 
-          WHEN email IN (
+          WHEN email_part IN (
              'info', 'test', 'hello', 'hey', 'help', 
              'press', 'support', 'sales', 'dev', 'developers', 'marketing', 
              'admin', 'hq', 'finance', 'operations', 'home', 'headquarters', 
@@ -40,7 +40,7 @@ code: |
              'design', 'editor', 'collaborations', 'solutions', 'analytics',
              'client', 'membership', 'strategy', 'businessdev', 'feedback', 
              'office', 'customer', 'cs', 'outreach') 
-          OR REGEXP_CONTAINS(email,'support')
+          OR REGEXP_CONTAINS(email_part,'support')
           THEN 1 ELSE 0 END is_department_email 
           FROM A 
   ))
