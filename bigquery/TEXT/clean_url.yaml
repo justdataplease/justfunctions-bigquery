@@ -21,18 +21,5 @@ examples:
       - "https://hey.com/me/?231#213"
     output: "hey.com/me"
     region: ALL
-code: |
-  (WITH A AS (select url),
-       B AS (
-        SELECT CASE
-          WHEN STRPOS(url, "?") > 0 THEN SUBSTR(url, 0, STRPOS(url, "?") - 1)
-          WHEN STRPOS(url, "#") > 0 THEN SUBSTR(url, 0, STRPOS(url, "#") - 1)
-          ELSE url
-        END AS url FROM A),
-       C AS (
-       SELECT  REGEXP_REPLACE(url,r'(https?|ftp):\/\/|\/$', '') url FROM B
-       )
-  SELECT * from C)
-
-
+code: REGEXP_REPLACE(SPLIT(url,'?')[SAFE_OFFSET(0)],r'(https?|ftp):\/\/|\/$', '')
 

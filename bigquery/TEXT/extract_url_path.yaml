@@ -1,0 +1,33 @@
+type: function_sql
+category:
+  - new
+  - text
+  - URL
+tutorial:
+source:
+github:
+description: "extract url path from <url>"
+arguments:
+  - name: url
+    type: STRING
+    description:
+  - name: clean_url_tail
+    type: INT
+    description:
+output:
+  name: url_domain
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "https://hey.com/me/?parameter=1"
+      - 1
+    output: "/me/"
+    region: ALL
+code: |
+  CASE WHEN clean_url_tail=1 THEN 
+    SPLIT(SPLIT(url,NET.HOST(url))[SAFE_OFFSET(1)],'?')[SAFE_OFFSET(0)]
+  ELSE
+    SPLIT(url,NET.HOST(url))[SAFE_OFFSET(1)]
+  END

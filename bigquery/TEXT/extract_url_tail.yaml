@@ -1,0 +1,23 @@
+type: function_sql
+category:
+  - text
+  - URL
+tutorial:
+source:
+github:
+description: "extract url tail from <url>"
+arguments:
+  - name: url
+    type: STRING
+    description:
+output:
+  name: url_domain
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "https://hey.com/me/?parameter=1"
+    output: "parameter=1"
+    region: ALL
+code: SPLIT(url,'?')[SAFE_OFFSET(1)]
