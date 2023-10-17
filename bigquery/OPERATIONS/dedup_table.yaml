@@ -1,0 +1,70 @@
+type: procedure
+category:
+  - Operations
+  - new
+description: Creates a deduplicated version of <table>. It keeps the chronologically (`timestamp_column`) latest row of the `unique column` or uses other methods based on arguments availability. Arguments `timestamp_column`, `unique_column`, `output_table_suffix` are optional.
+arguments:
+  - name: table_name
+    type: string
+  - name: timestamp_column
+    type: string
+    default: ''
+  - name: unique_column
+    type: string
+    default: ''
+  - name: output_table_suffix
+    type: string
+    default: '_dedup'
+output:
+  name: table_dedup
+  type: any type
+examples:
+  - description: ""
+    arguments:
+      - 'your_project.your_dataset.your_table'
+      - 'created_at'
+      - 'user_id'
+      - '_dedup'
+    output: 'your_project.your_dataset.your_table.your_table_dedup'
+    region: ALL
+code: |
+    DECLARE sql STRING;
+    DECLARE final_table_name STRING;
+  
+    SET final_table_name = CONCAT(table_name, IF(output_table_suffix != '', output_table_suffix, '_dedup'));
+  
+    IF unique_column = '' AND timestamp_column = '' THEN
+      SET sql = FORMAT("""
+        CREATE OR REPLACE TABLE %s AS
+        SELECT DISTINCT *
+        FROM %s;
+      """, final_table_name, table_name);
+    ELSEIF unique_column != '' AND timestamp_column = '' THEN
+      SET sql = FORMAT("""
+        CREATE OR REPLACE TABLE %s AS
+        SELECT * EXCEPT(row_num)
+        FROM (
+          SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY %s) AS row_num
+          FROM
+            %s
+        )
+        WHERE row_num = 1;
+      """, final_table_name, unique_column, table_name);
+    ELSE
+      SET sql = FORMAT("""
+        CREATE OR REPLACE TABLE %s AS
+        SELECT * EXCEPT(row_num)
+        FROM (
+          SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY %s ORDER BY %s DESC) AS row_num
+          FROM
+            %s
+        )
+        WHERE row_num = 1;
+      """, final_table_name, unique_column, timestamp_column, table_name);
+    END IF;
+  
+    EXECUTE IMMEDIATE sql;

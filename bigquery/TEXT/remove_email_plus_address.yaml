@@ -1,0 +1,23 @@
+type: function_sql
+category:
+  - text
+  - email
+tutorial:
+source:
+github:
+description: "remove email sub-address or plus address from `email`."
+arguments:
+  - name: email
+    type: STRING
+    description:
+output:
+  name: cleaned_email
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "hey+other@gmail.com"
+    output: "hey@gmail.com"
+    region: ALL
+code: REGEXP_REPLACE(email,r'(\+\w+)(@)', r'\2')

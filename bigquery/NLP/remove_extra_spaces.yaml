@@ -1,0 +1,22 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Remove extra spaces (tap,space,newline,paragraph etc) in a `string`."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "\\tHi     there\n.\\n\\n"
+    output: "Hi there."
+    region: ALL
+code: TRIM(REGEXP_REPLACE(REGEXP_REPLACE(string,r'\n+|\t+|\r+|\\n+|\\t+|\\r+|\\s+',''), r'\s+', ' '))

@@ -1,0 +1,33 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Deduplicate characters in 'string`."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "Helloooo!"
+    output: "Helo!"
+    region: ALL
+code: |
+  (SELECT
+  STRING_AGG(
+    IF
+      (c = SPLIT(string, '')[SAFE_OFFSET(off - 1)],
+        NULL,
+        c), '' ORDER BY off)
+  FROM
+  UNNEST(SPLIT(string, '')) AS c
+  WITH OFFSET off)
+
+

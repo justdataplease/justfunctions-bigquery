@@ -1,0 +1,23 @@
+type: function_sql
+category:
+  - text
+  - URL
+tutorial:
+source:
+github:
+description: "extract url suffix from <url>."
+arguments:
+  - name: url
+    type: STRING
+    description:
+output:
+  name: url_prefix
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "https://en.hey.com/me/?231#213"
+    output: "com"
+    region: ALL
+code: NET.PUBLIC_SUFFIX(url)

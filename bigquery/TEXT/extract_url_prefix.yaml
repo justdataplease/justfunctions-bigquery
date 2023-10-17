@@ -1,0 +1,23 @@
+type: function_sql
+category:
+  - text
+  - URL
+tutorial:
+source:
+github:
+description: "extract url prefix from <url>."
+arguments:
+  - name: url
+    type: STRING
+    description:
+output:
+  name: url_prefix
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "https://en.hey.com/me/?231#213"
+    output: "en"
+    region: ALL
+code: SPLIT(url,".")[OFFSET(0)]

@@ -1,0 +1,24 @@
+type: function_sql
+category:
+  - text
+  - email
+  - URL
+tutorial:
+source:
+github:
+description: "extract domain from <url> or <email>."
+arguments:
+  - name: url
+    type: STRING
+    description:
+output:
+  name: url_domain
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "https://hey.com/me/?231#213"
+    output: "hey"
+    region: ALL
+code: REPLACE (NET.REG_DOMAIN(url), CONCAT('.',NET.PUBLIC_SUFFIX(url)),"")

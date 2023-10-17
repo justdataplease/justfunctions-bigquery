@@ -1,0 +1,26 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Splits 'string' into words."
+arguments:
+  - name: string
+    type: string
+    description:
+  - name: symbol
+    type: string
+    description:
+output:
+  name: tokens
+  type: ARRAY<STRING>
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "this is a sentence"
+      - "\\\\s+"
+    output: [ "this","is","a","sentence" ]
+    region: ALL
+code: SPLIT(REGEXP_REPLACE(LOWER(string),symbol," "), " ")

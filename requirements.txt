@@ -1,0 +1,6 @@
+Markdown==3.4.3
+python-dotenv==1.0.0
+psycopg2==2.9.6
+google-cloud-bigquery==3.4.1
+Jinja2==3.0.3
+PyYAML==5.1

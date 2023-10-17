@@ -1,0 +1,24 @@
+type: function_sql
+category:
+  - text
+  - email
+tutorial:
+source:
+github:
+description: "detects if an `email` belongs to business department."
+arguments:
+  - name: email
+    type: STRING
+    description:
+output:
+  name: is_department_email
+  type: INT
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "sales@dev.io"
+    output: "1"
+    region: ALL
+code: |
+ (SELECT CASE WHEN SPLIT(email,"@")[offset(0)] IN ('info','test','hello','hey','compliance','help','press','support','sales','dev','developers','marketing','admin','hq','finance','operations','home','headquarters','jobs','main','here','one') THEN 1 ELSE 0 END)

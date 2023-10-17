@@ -1,0 +1,38 @@
+type: function_sql
+category:
+  - text
+  - new
+  - url
+tutorial:
+source:
+github:
+description: "remove http/ftp/https:// and url tail and last url slash from `url`."
+arguments:
+  - name: url
+    type: STRING
+    description:
+output:
+  name: url_clean
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "https://hey.com/me/?231#213"
+    output: "hey.com/me"
+    region: ALL
+code: |
+  (WITH A AS (select url),
+       B AS (
+        SELECT CASE
+          WHEN STRPOS(url, "?") > 0 THEN SUBSTR(url, 0, STRPOS(url, "?") - 1)
+          WHEN STRPOS(url, "#") > 0 THEN SUBSTR(url, 0, STRPOS(url, "#") - 1)
+          ELSE url
+        END AS url FROM A),
+       C AS (
+       SELECT  REGEXP_REPLACE(url,r'(https?|ftp):\/\/|\/$', '') url FROM B
+       )
+  SELECT * from C)
+
+
+

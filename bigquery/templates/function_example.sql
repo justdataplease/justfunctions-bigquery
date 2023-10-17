@@ -1,0 +1,1 @@
+SELECT `{{ project_id }}.{{ dataset_id }}.{{ function_name }}`({% for example in examples %}{% if loop.first %}{{'\"' + example['arguments']|join('","') + '\"'}}{% endif %}{% endfor %})

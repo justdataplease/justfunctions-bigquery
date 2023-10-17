@@ -1,0 +1,29 @@
+type: function_sql
+category:
+  - text
+  - URL
+  - new
+tutorial:
+source:
+github:
+description: "Extract parameter value from <url>."
+arguments:
+  - name: url
+    type: STRING
+    description:
+  - name: parameter
+    type: STRING
+    description:
+output:
+  name: parameter
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "www.google.com?medium=cpc&source=google&keyword=hey&source=facebook"
+      - "source"
+    output: "facebook"
+    region: ALL
+code: REGEXP_EXTRACT(url, "[?&]" || parameter || "=([^&]+)")
+
