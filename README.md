@@ -5,18 +5,25 @@
 [![Auto Deployment](https://img.shields.io/badge/Deployment-Auto-green)](#)
 [![Documentation](https://img.shields.io/badge/Documentation-Markdown-blue)](#)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![UDFs Count](https://img.shields.io/badge/UDFs-Count-blue)](#) 
+[![UDFs Count](https://img.shields.io/badge/UDFs-Count-blue)](#)
 
-Make your daily interaction with BigQuery easier with [JustFunctions](https://justdataplease.com/justfunctions-bigquery/) - a collection of open-source functions (UDFs) to extend BigQuery capabilities.
-You can use them directly in any of your projects or auto-deploy them to your BigQuery and generate insightful markdown documentation.
+Make your daily interaction with BigQuery easier
+with [JustFunctions](https://justdataplease.com/justfunctions-bigquery/) - a collection of open-source functions (UDFs)
+to extend BigQuery capabilities.
+You can use them directly in any of your projects or auto-deploy them to your BigQuery and generate insightful markdown
+documentation.
 
 https://justdataplease.com/justfunctions-bigquery/
 
 ## Features
+
 - **Comprehensive UDF Collection**: Extend your BigQuery capabilities with a diverse set of UDFs.
-- **Auto Deployment**: No more manual deployments. Just run the script to deploy your SQL functions instantly to BigQuery.
-- **Markdown Documentation**: Post deployment, auto-generate a comprehensive markdown documentation, detailing each function, its usage, and examples.
-- **Recreation on Run**: Ensure you have the latest and greatest. Each run of the script recreates all functions and their corresponding documentation.
+- **Auto Deployment**: No more manual deployments. Just run the script to deploy your SQL functions instantly to
+  BigQuery.
+- **Markdown Documentation**: Post deployment, auto-generate a comprehensive markdown documentation, detailing each
+  function, its usage, and examples.
+- **Recreation on Run**: Ensure you have the latest and greatest. Each run of the script recreates all functions and
+  their corresponding documentation.
 
 ## Prerequisites
 
@@ -48,6 +55,11 @@ Run the main script:
 python bigquery/deploy.py
 ```
 
-Join us in our quest to make BigQuery even more powerful. If you have suggestions, UDFs to contribute, or any feedback, feel free to get involved!
+Checkout newly created functions in your bigquery and md documentation (functions_documentation.md)!
+
+## Join Us
+
+Join us in our quest to make BigQuery even more powerful. If you have suggestions, UDFs to contribute, or any feedback,
+feel free to get involved!
 
 Created by the [JustDataPlease team](https://justdataplease.com).
