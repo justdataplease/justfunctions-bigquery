@@ -48,7 +48,6 @@ Run the main script:
 python bigquery/deploy.py
 ```
 
+Join us in our quest to make BigQuery even more powerful. If you have suggestions, UDFs to contribute, or any feedback, feel free to get involved!
 
 Created by the [JustDataPlease team](https://justdataplease.com).
-
-Join us in our quest to make BigQuery even more powerful. If you have suggestions, UDFs to contribute, or any feedback, feel free to get involved!
