@@ -55,7 +55,7 @@ Run the main script:
 python bigquery/deploy.py
 ```
 
-Checkout newly created functions in your bigquery and MD documentation (functions_documentation.md)!
+🚀 Checkout newly created functions in your BigQuery and MD documentation (generated locally - check functions_documentation.md)!
 
 ## Join Us
 
