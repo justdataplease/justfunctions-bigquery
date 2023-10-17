@@ -22,7 +22,7 @@ examples:
     region: ALL
 code: |
   (SELECT CASE WHEN SPLIT(email,"@")[offset(0)] IN (
-       'info', 'test', 'hello', 'hey'', 'help', 
+       'info', 'test', 'hello', 'hey', 'help', 
        'press', 'support', 'sales', 'dev', 'developers', 'marketing', 
        'admin', 'hq', 'finance', 'operations', 'home', 'headquarters', 
        'jobs', 'main', 'here', 'one', 'hr', 'tech', 'billing', 
@@ -34,4 +34,5 @@ code: |
        'licensing', 'advertising', 'affiliates', 
        'design', 'editor', 'collaborations', 'solutions', 'analytics',
        'client', 'membership', 'strategy', 'businessdev', 'feedback', 
-       'office', 'customer', 'cs', 'outreach') THEN 1 ELSE 0 END)
+       'office', 'customer', 'cs', 'outreach') 
+  THEN 1 ELSE 0 END)
