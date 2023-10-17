@@ -21,18 +21,26 @@ examples:
     output: "1"
     region: ALL
 code: |
-  (SELECT CASE WHEN SPLIT(email,"@")[offset(0)] IN (
-       'info', 'test', 'hello', 'hey', 'help', 
-       'press', 'support', 'sales', 'dev', 'developers', 'marketing', 
-       'admin', 'hq', 'finance', 'operations', 'home', 'headquarters', 
-       'jobs', 'main', 'here', 'one', 'hr', 'tech', 'billing', 
-       'accounts', 'partnerships', 'team', 'contact',
-       'feedback', 'legal', 'solutions', 'services', 'training', 
-       'products', 'careers', 'service', 'management', 'events', 
-       'subscriptions', 'media', 'research', 'security', 'investor', 
-       'relations', 'customerservice',  'bookings', 'reservations', 
-       'licensing', 'advertising', 'affiliates', 
-       'design', 'editor', 'collaborations', 'solutions', 'analytics',
-       'client', 'membership', 'strategy', 'businessdev', 'feedback', 
-       'office', 'customer', 'cs', 'outreach') 
-  THEN 1 ELSE 0 END)
+  ((
+       WITH A AS (SELECT SPLIT(email,"@")[offset(0)] email)
+  
+       SELECT 
+       CASE 
+          WHEN email IN (
+             'info', 'test', 'hello', 'hey', 'help', 
+             'press', 'support', 'sales', 'dev', 'developers', 'marketing', 
+             'admin', 'hq', 'finance', 'operations', 'home', 'headquarters', 
+             'jobs', 'main', 'here', 'one', 'hr', 'tech', 'billing', 
+             'accounts', 'partnerships', 'team', 'contact',
+             'feedback', 'legal', 'solutions', 'services', 'training', 
+             'products', 'careers', 'service', 'management', 'events', 
+             'subscriptions', 'media', 'research', 'security', 'investor', 
+             'relations', 'customerservice',  'bookings', 'reservations', 
+             'licensing', 'advertising', 'affiliates', 
+             'design', 'editor', 'collaborations', 'solutions', 'analytics',
+             'client', 'membership', 'strategy', 'businessdev', 'feedback', 
+             'office', 'customer', 'cs', 'outreach') 
+          OR REGEXP_CONTAINS(email,'support')
+          THEN 1 ELSE 0 END is_department_email 
+          FROM A 
+  ))
