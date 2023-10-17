@@ -1,7 +1,45 @@
 # Documentation for SQL Functions and Procedures
 
+## Contents
+1. [dedup_chars(string)](#dedup_chars)
+2. [word_tokens(string, symbol)](#word_tokens)
+3. [replace_urls(string, replacement)](#replace_urls)
+4. [stemmer_greek(string)](#stemmer_greek)
+5. [remove_accents(string)](#remove_accents)
+6. [stemmer_porter(string)](#stemmer_porter)
+7. [replace_html_tags(string, replacement)](#replace_html_tags)
+8. [stemmer_lancaster(string)](#stemmer_lancaster)
+9. [remove_en_stopwords(string)](#remove_en_stopwords)
+10. [remove_extra_spaces(string)](#remove_extra_spaces)
+11. [replace_special_chars(string, replacement)](#replace_special_chars)
+12. [transliterate_anyascii(string)](#transliterate_anyascii)
+13. [replace_en_contractions(string, replacement)](#replace_en_contractions)
+14. [remove_extra_whitespaces(string)](#remove_extra_whitespaces)
+15. [replace_special_chars_lang(string, replacement)](#replace_special_chars_lang)
+16. [replace_special_chars_latin(string, replacement)](#replace_special_chars_latin)
+17. [clean_url(url)](#clean_url)
+18. [split_url(url, part, url_type)](#split_url)
+19. [fuzzy_nysiis(string)](#fuzzy_nysiis)
+20. [surrogate_key(string)](#surrogate_key)
+21. [word_distance(string_1, string_2)](#word_distance)
+22. [parse_useragent(useragent)](#parse_useragent)
+23. [surrogate_key_str(string)](#surrogate_key_str)
+24. [extract_url_domain(url)](#extract_url_domain)
+25. [extract_url_prefix(url)](#extract_url_prefix)
+26. [extract_url_suffix(url)](#extract_url_suffix)
+27. [fuzzy_distance_dam(string_1, string_2)](#fuzzy_distance_dam)
+28. [fuzzy_distance_leven(string_1, string_2)](#fuzzy_distance_leven)
+29. [extract_url_parameter(url, parameter)](#extract_url_parameter)
+30. [detect_department_email(email)](#detect_department_email)
+31. [extract_url_domain_base(url)](#extract_url_domain_base)
+32. [detect_free_email_domain(email_domain)](#detect_free_email_domain)
+33. [remove_email_plus_address(email)](#remove_email_plus_address)
+34. [detect_useragent_device_type(useragent)](#detect_useragent_device_type)
+35. [dedup_table(table_name, timestamp_column, unique_column, output_table_suffix)](#dedup_table)
+36. [percentile(arr, percentile)](#percentile)
+
 ---
-## 1. dedup_chars(string)
+## <a id='dedup_chars'></a>1. dedup_chars(string)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -34,7 +72,7 @@ SELECT `justfunctions.eu.dedup_chars`("Helloooo!")
 Helo!
 ```
 ---
-## 2. word_tokens(string, symbol)
+## <a id='word_tokens'></a>2. word_tokens(string, symbol)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -58,7 +96,7 @@ SELECT `justfunctions.eu.word_tokens`("this is a sentence","\\s+")
 ['this', 'is', 'a', 'sentence']
 ```
 ---
-## 3. replace_urls(string, replacement)
+## <a id='replace_urls'></a>3. replace_urls(string, replacement)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -82,7 +120,7 @@ SELECT `justfunctions.eu.replace_urls`("Google it https://www.google.com/ !","")
 Google it !
 ```
 ---
-## 4. stemmer_greek(string)
+## <a id='stemmer_greek'></a>4. stemmer_greek(string)
 
 - **Type**: JS
 - **Tags**: NLP, text, stemmer
@@ -105,7 +143,7 @@ SELECT `justfunctions.eu.stemmer_greek`("καλησπερα")
 ΚΑΛΗΣΠΕΡ
 ```
 ---
-## 5. remove_accents(string)
+## <a id='remove_accents'></a>5. remove_accents(string)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -129,7 +167,7 @@ SELECT `justfunctions.eu.remove_accents`("¿Dóndé Éstá Mí Ágúá?")
 ¿Donde Esta Mi Agua?
 ```
 ---
-## 6. stemmer_porter(string)
+## <a id='stemmer_porter'></a>6. stemmer_porter(string)
 
 - **Type**: JS
 - **Tags**: NLP, text, stemmer
@@ -152,7 +190,7 @@ SELECT `justfunctions.eu.stemmer_porter`("replied")
 repli
 ```
 ---
-## 7. replace_html_tags(string, replacement)
+## <a id='replace_html_tags'></a>7. replace_html_tags(string, replacement)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -176,7 +214,7 @@ SELECT `justfunctions.eu.replace_html_tags`("<div class=\'test\'>hello world<a h
 hello world hello world
 ```
 ---
-## 8. stemmer_lancaster(string)
+## <a id='stemmer_lancaster'></a>8. stemmer_lancaster(string)
 
 - **Type**: JS
 - **Tags**: NLP, text, stemmer
@@ -199,7 +237,7 @@ SELECT `justfunctions.eu.stemmer_lancaster`("replied")
 reply
 ```
 ---
-## 9. remove_en_stopwords(string)
+## <a id='remove_en_stopwords'></a>9. remove_en_stopwords(string)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -223,7 +261,7 @@ SELECT `justfunctions.eu.remove_en_stopwords`("The query in the database is retu
 query   database  returning  rows   specified column values.
 ```
 ---
-## 10. remove_extra_spaces(string)
+## <a id='remove_extra_spaces'></a>10. remove_extra_spaces(string)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -248,7 +286,7 @@ SELECT `justfunctions.eu.remove_extra_spaces`("\tHi     there
 Hi there.
 ```
 ---
-## 11. replace_special_chars(string, replacement)
+## <a id='replace_special_chars'></a>11. replace_special_chars(string, replacement)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -272,7 +310,7 @@ SELECT `justfunctions.eu.replace_special_chars`("爱=Love♥ & 幸福=Happiness�
 Love and Happiness
 ```
 ---
-## 12. transliterate_anyascii(string)
+## <a id='transliterate_anyascii'></a>12. transliterate_anyascii(string)
 
 - **Type**: JS
 - **Tags**: NLP, text, transliteration
@@ -295,7 +333,7 @@ SELECT `justfunctions.eu.transliterate_anyascii`("καλημέρα")
 kalimera
 ```
 ---
-## 13. replace_en_contractions(string, replacement)
+## <a id='replace_en_contractions'></a>13. replace_en_contractions(string, replacement)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -552,7 +590,7 @@ SELECT `justfunctions.eu.replace_en_contractions`("I'll be great tmr thx","r"\s+
 I will be great tomorrow thanks
 ```
 ---
-## 14. remove_extra_whitespaces(string)
+## <a id='remove_extra_whitespaces'></a>14. remove_extra_whitespaces(string)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -578,7 +616,7 @@ Hi there
 .
 ```
 ---
-## 15. replace_special_chars_lang(string, replacement)
+## <a id='replace_special_chars_lang'></a>15. replace_special_chars_lang(string, replacement)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -602,7 +640,7 @@ SELECT `justfunctions.eu.replace_special_chars_lang`("$幸福=Happiness▲ Ζω�
 幸福Happiness Ζωή and Радость الحب
 ```
 ---
-## 16. replace_special_chars_latin(string, replacement)
+## <a id='replace_special_chars_latin'></a>16. replace_special_chars_latin(string, replacement)
 
 - **Type**: SQL
 - **Tags**: NLP, text
@@ -626,7 +664,7 @@ SELECT `justfunctions.eu.replace_special_chars_latin`("爱=Love♥ & 幸福=Happ
 爱Love 幸Happiness
 ```
 ---
-## 17. clean_url(url)
+## <a id='clean_url'></a>17. clean_url(url)
 
 - **Type**: SQL
 - **Tags**: text, new, url
@@ -661,7 +699,7 @@ SELECT `justfunctions.eu.clean_url`("https://hey.com/me/?231#213")
 hey.com/me
 ```
 ---
-## 18. split_url(url, part, url_type)
+## <a id='split_url'></a>18. split_url(url, part, url_type)
 
 - **Type**: SQL
 - **Tags**: text, URL
@@ -700,7 +738,7 @@ SELECT `justfunctions.eu.split_url`("hey.com/me/?231#213","2","1")
 me
 ```
 ---
-## 19. fuzzy_nysiis(string)
+## <a id='fuzzy_nysiis'></a>19. fuzzy_nysiis(string)
 
 - **Type**: SQL
 - **Tags**: text, similarity
@@ -785,7 +823,7 @@ SELECT `justfunctions.eu.fuzzy_nysiis`("python")
 pytan
 ```
 ---
-## 20. surrogate_key(string)
+## <a id='surrogate_key'></a>20. surrogate_key(string)
 
 - **Type**: SQL
 - **Tags**: text, surrogate key
@@ -809,7 +847,7 @@ SELECT `justfunctions.eu.surrogate_key`("python")
 2065202487608477923
 ```
 ---
-## 21. word_distance(string_1, string_2)
+## <a id='word_distance'></a>21. word_distance(string_1, string_2)
 
 - **Type**: JS
 - **Tags**: text, similarity
@@ -832,7 +870,7 @@ SELECT `justfunctions.eu.word_distance`("python","pithon")
 1
 ```
 ---
-## 22. parse_useragent(useragent)
+## <a id='parse_useragent'></a>22. parse_useragent(useragent)
 
 - **Type**: JS
 - **Tags**: text, useragent, new
@@ -876,7 +914,7 @@ arch : null
 
 ```
 ---
-## 23. surrogate_key_str(string)
+## <a id='surrogate_key_str'></a>23. surrogate_key_str(string)
 
 - **Type**: SQL
 - **Tags**: text, surrogate key
@@ -900,7 +938,7 @@ SELECT `justfunctions.eu.surrogate_key_str`("python")
 2065202487608477923
 ```
 ---
-## 24. extract_url_domain(url)
+## <a id='extract_url_domain'></a>24. extract_url_domain(url)
 
 - **Type**: SQL
 - **Tags**: text, email, URL
@@ -924,7 +962,7 @@ SELECT `justfunctions.eu.extract_url_domain`("https://hey.com/me/?231#213")
 hey.com
 ```
 ---
-## 25. extract_url_prefix(url)
+## <a id='extract_url_prefix'></a>25. extract_url_prefix(url)
 
 - **Type**: SQL
 - **Tags**: text, URL
@@ -948,7 +986,7 @@ SELECT `justfunctions.eu.extract_url_prefix`("https://en.hey.com/me/?231#213")
 en
 ```
 ---
-## 26. extract_url_suffix(url)
+## <a id='extract_url_suffix'></a>26. extract_url_suffix(url)
 
 - **Type**: SQL
 - **Tags**: text, URL
@@ -972,7 +1010,7 @@ SELECT `justfunctions.eu.extract_url_suffix`("https://en.hey.com/me/?231#213")
 com
 ```
 ---
-## 27. fuzzy_distance_dam(string_1, string_2)
+## <a id='fuzzy_distance_dam'></a>27. fuzzy_distance_dam(string_1, string_2)
 
 - **Type**: JS
 - **Tags**: text, similarity
@@ -1042,7 +1080,7 @@ SELECT `justfunctions.eu.fuzzy_distance_dam`("pyhtno","python")
 2
 ```
 ---
-## 28. fuzzy_distance_leven(string_1, string_2)
+## <a id='fuzzy_distance_leven'></a>28. fuzzy_distance_leven(string_1, string_2)
 
 - **Type**: JS
 - **Tags**: text, similarity
@@ -1065,7 +1103,7 @@ SELECT `justfunctions.eu.fuzzy_distance_leven`("pyhtno","python")
 3
 ```
 ---
-## 29. extract_url_parameter(url, parameter)
+## <a id='extract_url_parameter'></a>29. extract_url_parameter(url, parameter)
 
 - **Type**: SQL
 - **Tags**: text, URL, new
@@ -1089,7 +1127,7 @@ SELECT `justfunctions.eu.extract_url_parameter`("www.google.com?medium=cpc&sourc
 facebook
 ```
 ---
-## 30. detect_department_email(email)
+## <a id='detect_department_email'></a>30. detect_department_email(email)
 
 - **Type**: SQL
 - **Tags**: text, email
@@ -1113,7 +1151,7 @@ SELECT `justfunctions.eu.detect_department_email`("sales@dev.io")
 1
 ```
 ---
-## 31. extract_url_domain_base(url)
+## <a id='extract_url_domain_base'></a>31. extract_url_domain_base(url)
 
 - **Type**: SQL
 - **Tags**: text, email, URL
@@ -1137,7 +1175,7 @@ SELECT `justfunctions.eu.extract_url_domain_base`("https://hey.com/me/?231#213")
 hey
 ```
 ---
-## 32. detect_free_email_domain(email_domain)
+## <a id='detect_free_email_domain'></a>32. detect_free_email_domain(email_domain)
 
 - **Type**: SQL
 - **Tags**: text, email, new
@@ -1161,7 +1199,7 @@ SELECT `justfunctions.eu.detect_free_email_domain`("gmail")
 1
 ```
 ---
-## 33. remove_email_plus_address(email)
+## <a id='remove_email_plus_address'></a>33. remove_email_plus_address(email)
 
 - **Type**: SQL
 - **Tags**: text, email
@@ -1185,7 +1223,7 @@ SELECT `justfunctions.eu.remove_email_plus_address`("hey+other@gmail.com")
 hey@gmail.com
 ```
 ---
-## 34. detect_useragent_device_type(useragent)
+## <a id='detect_useragent_device_type'></a>34. detect_useragent_device_type(useragent)
 
 - **Type**: SQL
 - **Tags**: text, useragent, new
@@ -1217,7 +1255,7 @@ SELECT `justfunctions.eu.detect_useragent_device_type`("Mozilla/5.0 (iPad; CPU O
 tablet
 ```
 ---
-## 35. dedup_table(table_name, timestamp_column, unique_column, output_table_suffix)
+## <a id='dedup_table'></a>35. dedup_table(table_name, timestamp_column, unique_column, output_table_suffix)
 
 - **Type**: PROCEDURE
 - **Tags**: Operations, new
@@ -1287,7 +1325,7 @@ CALL `justfunctions.eu.dedup_table`("your_project.your_dataset.your_table","crea
 your_project.your_dataset.your_table.your_table_dedup
 ```
 ---
-## 36. percentile(arr, percentile)
+## <a id='percentile'></a>36. percentile(arr, percentile)
 
 - **Type**: SQL
 - **Tags**: STATISTICS, percentile

@@ -3,7 +3,7 @@ import yaml
 import jinja2
 import os
 from dotenv import load_dotenv
-from bigquery.secrets import projects
+from secrets import projects
 
 load_dotenv()
 TEMPLATE_FOLDER = "./bigquery/templates"
@@ -209,11 +209,18 @@ def create_md_file(functions_list, filename='functions_documentation.md'):
     :return:
     """
     with open(filename, 'w', encoding='utf-8') as md_file:
-        md_file.write("# Documentation for SQL Functions and Procedures\n")
+        md_file.write("# Documentation for SQL Functions and Procedures\n\n")
+
+        # Contents Section
+        md_file.write("## Contents\n")
+        for idx, func in enumerate(functions_list, 1):
+            link_slug = func['slug']  # assuming slug can be used as the ID for links
+            md_file.write(f"{idx}. [{func['title']}](#{link_slug})\n")
         md_file.write("\n---\n")
 
         for idx, func in enumerate(functions_list, 1):
-            md_file.write(f"## {idx}. {func['title']}\n\n")
+            link_slug = func['slug']
+            md_file.write(f"## <a id='{link_slug}'></a>{idx}. {func['title']}\n\n")
             md_file.write(f"- **Type**: {func['ftype']}\n")
             md_file.write(f"- **Tags**: {', '.join(func['tags'])}\n")
             md_file.write(f"- **Region**: {func['region']}\n")
