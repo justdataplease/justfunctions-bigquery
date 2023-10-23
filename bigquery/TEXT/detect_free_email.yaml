@@ -27,27 +27,27 @@ code: |
   
   SELECT 
   CASE 
-    WHEN CHAR_LENGTH(email_domain)<=1 
-                    OR email_domain IN ('10minutemail', '126', '21cn', '33mail', 'alice', 'aliyun', 'aol', 'arnet', 'att', 'bell', 'bellsouth', 
-                                        'binkmail', 'bluewin', 'blueyonder', 'bol', 'bt', 'btinternet', 'burnermail', 'charter', 'club', 
-                                        'cock', 'comcast', 'cox', 'daum', 'deadaddress', 'disroot', 'dropmail', 'e4ward', 'earthlink', 
-                                        'email', 'eu', 'fakeinbox', 'fakemailgenerator', 'fastmail', 'fibertel', 'foxmail', 'free', 
-                                        'freenet', 'freeserve', 'games', 'getnada', 'gishpuppy', 'globo', 'globomail', 'gmail', 'gmx', 
-                                        'googlemail', 'guerrillamail', 'hanmail', 'hotmail', 'hush', 'hushmail', 'icloud', 'ig', 'iname', 
-                                        'inbox', 'inboxalias', 'incognitomail', 'itelefonica', 'jetable', 'juno', 'keemail', 'laposte', 
-                                        'lavabit', 'libero', 'list', 'live', 'love', 'mac', 'mail', 'mail2world', 'mailblocks', 'mailcatch', 
-                                        'maildrop', 'mailexpire', 'mailfence', 'mailinator', 'mailmoat', 'mailnesia', 'mailnull', 'mailoo', 
-                                        'me', 'mintemail', 'moakt', 'mohmal', 'msn', 'myspamless', 'mytrashmail', 'nate', 'naver', 'neuf', 
-                                        'neverbox', 'nomail', 'notsharingmy', 'ntlworld', 'nym', 'o2', 'oi', 'onet', 'online', 'orange', 
-                                        'outlook', 'pobox', 'pookmail', 'poste', 'posteo', 'prodigy', 'proton', 'qq', 'r7', 'rambler', 
-                                        'rediffmail', 'rocketmail', 'rogers', 'runbox', 'safe-mail', 'sbcglobal', 'seznam', 'sfr', 'shaw', 
-                                        'shieldemail', 'sina', 'sky', 'skynet', 'sohu', 'spam', 'spambog', 'spambox', 'spamcowboy', 
-                                        'spamevader', 'spamex', 'spamgourmet', 'spamhole', 'spaml', 'spamoff', 'spamspot', 'spamthis', 
-                                        'speedy', 'startmail', 'sympatico', 't-online', 'talktalk', 'techemail', 'telenet', 'teletu', 
-                                        'temp', 'tempinbox', 'tempmail', 'temporaryemail', 'terra', 'thisisnotmyrealemail', 'throwawaymail', 
-                                        'tin', 'tiscali', 'trashmail', 'tuta', 'tutamail', 'tutanota', 'tvcablenet', 'uol', 'verizon', 
-                                        'vfemail', 'virgilio', 'virgin', 'voo', 'walla', 'wanadoo', 'web', 'wow', 'ya', 'yahoo', 'yandex', 
-                                        'yeah', 'ygm', 'ymail', 'yopmail', 'zipmail', 'zoho') 
+  WHEN CHAR_LENGTH(email_domain)<=1 
+  OR email_domain IN ('10minutemail', '126', '21cn', '33mail', 'alice', 'aliyun', 'aol', 'arnet', 'att', 'bell', 'bellsouth', 
+  'binkmail', 'bluewin', 'blueyonder', 'bol', 'bt', 'btinternet', 'burnermail', 'charter', 'club', 
+  'cock', 'comcast', 'cox', 'daum', 'deadaddress', 'disroot', 'dropmail', 'e4ward', 'earthlink', 
+  'email', 'eu', 'fakeinbox', 'fakemailgenerator', 'fastmail', 'fibertel', 'foxmail', 'free', 
+  'freenet', 'freeserve', 'games', 'getnada', 'gishpuppy', 'globo', 'globomail', 'gmail', 'gmx', 
+  'googlemail', 'guerrillamail', 'hanmail', 'hotmail', 'hush', 'hushmail', 'icloud', 'ig', 'iname', 
+  'inbox', 'inboxalias', 'incognitomail', 'itelefonica', 'jetable', 'juno', 'keemail', 'laposte', 
+  'lavabit', 'libero', 'list', 'live', 'love', 'mac', 'mail', 'mail2world', 'mailblocks', 'mailcatch', 
+  'maildrop', 'mailexpire', 'mailfence', 'mailinator', 'mailmoat', 'mailnesia', 'mailnull', 'mailoo', 
+  'me', 'mintemail', 'moakt', 'mohmal', 'msn', 'myspamless', 'mytrashmail', 'nate', 'naver', 'neuf', 
+  'neverbox', 'nomail', 'notsharingmy', 'ntlworld', 'nym', 'o2', 'oi', 'onet', 'online', 'orange', 
+  'outlook', 'pobox', 'pookmail', 'poste', 'posteo', 'prodigy', 'proton', 'qq', 'r7', 'rambler', 
+  'rediffmail', 'rocketmail', 'rogers', 'runbox', 'safe-mail', 'sbcglobal', 'seznam', 'sfr', 'shaw', 
+  'shieldemail', 'sina', 'sky', 'skynet', 'sohu', 'spam', 'spambog', 'spambox', 'spamcowboy', 
+  'spamevader', 'spamex', 'spamgourmet', 'spamhole', 'spaml', 'spamoff', 'spamspot', 'spamthis', 
+  'speedy', 'startmail', 'sympatico', 't-online', 'talktalk', 'techemail', 'telenet', 'teletu', 
+  'temp', 'tempinbox', 'tempmail', 'temporaryemail', 'terra', 'thisisnotmyrealemail', 'throwawaymail', 
+  'tin', 'tiscali', 'trashmail', 'tuta', 'tutamail', 'tutanota', 'tvcablenet', 'uol', 'verizon', 
+  'vfemail', 'virgilio', 'virgin', 'voo', 'walla', 'wanadoo', 'web', 'wow', 'ya', 'yahoo', 'yandex', 
+  'yeah', 'ygm', 'ymail', 'yopmail', 'zipmail', 'zoho') 
   OR REGEXP_CONTAINS(email_domain,r'[0-9]') THEN 1 ELSE 0 END
   
   FROM url_domain_base
