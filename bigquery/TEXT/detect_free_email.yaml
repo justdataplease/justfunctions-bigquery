@@ -18,7 +18,7 @@ output:
 examples:
   - description: ""
     arguments:
-      - "gmail"
+      - "jason@gmail.com"
     output: "1"
     region: ALL
 code: | 
