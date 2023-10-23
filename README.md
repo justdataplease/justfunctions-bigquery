@@ -57,10 +57,15 @@ python bigquery/deploy.py
 
 ✨ Explore the freshly deployed functions in BigQuery and refer to the locally-generated markdown documentation in functions_documentation.md! ✨
 
+## Acknowledgments
+
+Special thanks to [BigFunctions team](https://unytics.io/bigfunctions/) for their inspiring project.
 
 ## Join Us
 
 Join us in our quest to make BigQuery even more powerful. If you have suggestions, UDFs to contribute, or any feedback,
 feel free to get involved!
+
+Special Thanks to [BigFunctions team](https://unytics.io/bigfunctions/) for the great work they have done.
 
 Created by the [JustDataPlease team](https://justdataplease.com).

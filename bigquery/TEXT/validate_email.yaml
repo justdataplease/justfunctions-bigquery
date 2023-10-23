@@ -1,0 +1,29 @@
+type: function_sql
+category:
+  - text
+  - email
+  - new
+tutorial:
+source: https://www.reddit.com/r/bigquery/comments/dshge0/udf_for_email_validation/
+github:
+description: "Detects if <email> is valid."
+arguments:
+  - name: email
+    type: STRING
+    description:
+output:
+  name: is_valid_email
+  type: INT
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "12/jason@gmail.com"
+    output: "0"
+    region: ALL
+code: | 
+  CASE
+     WHEN NET.REG_DOMAIN(lower(email)) IS NULL THEN 0
+     WHEN REGEXP_CONTAINS(lower(email), "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])$") THEN 1
+     ELSE 0
+  END
