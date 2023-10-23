@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "detects if `email_domain` is from a free service."
+description: "Detects if <email_domain> belongs to a free email service (gmail, yahoo, outlook, etc)."
 arguments:
   - name: email_domain
     type: STRING

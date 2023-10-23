@@ -5,13 +5,10 @@ category:
 tutorial:
 source:
 github:
-description: "splits field `url`."
+description: "Splits a <url> into parts, using '/' symbol."
 arguments:
   - name: url
     type: STRING
-    description:
-  - name: part
-    type: INT
     description:
   - name: url_type
     type: INT
@@ -25,22 +22,11 @@ examples:
     arguments:
       - "hey.com/me/?231#213"
       - 2
-      - 1
     output: "me"
     region: ALL
 code: |
   (WITH split_parts as (
-  select SPLIT("/" || TRIM(url,"/"), "/") split_str
+  SELECT SPLIT("/" || TRIM(url,"/"), "/") split_str
   )
-  select
-  IF(part=-1,
-     split_str[safe_ordinal(ARRAY_LENGTH(split_str))],
-     IF(url_type=1,
-        IF(split_str[safe_ordinal(part+2)] IS NOT NULL,
-          split_str[safe_ordinal(part+1)],
-          NULL
-          ),
-        split_str[safe_ordinal(part+1)]
-        )
-     ) rs
+  SELECT split_str[safe_ordinal(part+1)]
   from split_parts)

@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "Extract language from <url>."
+description: "Extract language from a <url>."
 arguments:
   - name: url
     type: STRING

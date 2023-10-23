@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "extract url path from <url>"
+description: "Extracts url path from <url>"
 arguments:
   - name: url
     type: STRING

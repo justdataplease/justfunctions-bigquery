@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "extract domain base from <url> or <email>."
+description: "Extract the domain from a <url> or an <email>."
 arguments:
   - name: url
     type: STRING

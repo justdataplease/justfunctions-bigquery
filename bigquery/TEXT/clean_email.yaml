@@ -5,7 +5,7 @@ category:
 tutorial:
 source:
 github:
-description: "Removes any sub-address (also known as plus addressing) from the <email>."
+description: "Converts the <email> to lowercase and removes any sub-address (also known as plus addressing) if present."
 arguments:
   - name: email
     type: STRING
@@ -17,7 +17,7 @@ output:
 examples:
   - description: ""
     arguments:
-      - "hey+other@gmail.com"
-    output: "hey@gmail.com"
+      - "HeLLo+other@gmail.com"
+    output: "hello@gmail.com"
     region: ALL
-code: REGEXP_REPLACE(email,r'(\+\w+)(@)', r'\2')
+code: LOWER(REGEXP_REPLACE(email,r'(\+\w+)(@)', r'\2'))

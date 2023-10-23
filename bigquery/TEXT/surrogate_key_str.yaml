@@ -5,7 +5,7 @@ category:
 tutorial: https://cloud.google.com/bigquery/docs/reference/standard-sql/hash_functions#farm_fingerprint
 source: https://github.com/google/farmhash
 github:
-description: "Creates a hashed value of multiple field `string`. Use CONCAT to create `string` to include multiple fields."
+description: "Creates a hashed value of multiple field <string>. Use CONCAT to create <string> to include multiple fields."
 arguments:
   - name: string
     type: STRING

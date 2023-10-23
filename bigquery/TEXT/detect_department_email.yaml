@@ -5,7 +5,7 @@ category:
 tutorial:
 source:
 github:
-description: "detects if an `email` belongs to business department."
+description: "Detects if an <email> belongs to a business department (sales, hr, support etc)."
 arguments:
   - name: email
     type: STRING

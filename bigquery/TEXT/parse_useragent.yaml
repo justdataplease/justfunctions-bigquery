@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "Parse useragent details from <useragent>."
+description: "Parses UserAgent details from <useragent>."
 arguments:
   - name: useragent
     type: STRING

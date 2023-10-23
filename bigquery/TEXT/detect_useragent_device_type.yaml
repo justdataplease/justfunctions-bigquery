@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "Detect UserAgent device type from <useragent>. It can be table,mobile,pc,tv or other."
+description: "Detects UserAgent device type from <useragent>. It can be table,mobile,pc,tv or other."
 arguments:
   - name: useragent
     type: STRING

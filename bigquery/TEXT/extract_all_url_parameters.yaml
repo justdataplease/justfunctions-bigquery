@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "Extract all parameters from <url> in JSON format."
+description: "Extracts all parameters from <url> in JSON format."
 arguments:
   - name: url
     type: STRING

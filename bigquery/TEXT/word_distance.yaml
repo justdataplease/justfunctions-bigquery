@@ -5,7 +5,7 @@ category:
 tutorial:
 source: https://github.com/nol13/fuzzball.js/
 github:
-description: "Calculates Levenshtein distance between `string_1` and `string_2`."
+description: "Calculates Levenshtein distance between <string_1> and <string_2>."
 arguments:
   - name: string_1
     type: STRING

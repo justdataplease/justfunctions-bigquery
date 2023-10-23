@@ -6,7 +6,7 @@ category:
 tutorial:
 source:
 github:
-description: "remove http/ftp/https:// and url tail and last url slash from `url`."
+description: "Removes http/ftp/https:// and url tail and last url slash from a <url>."
 arguments:
   - name: url
     type: STRING

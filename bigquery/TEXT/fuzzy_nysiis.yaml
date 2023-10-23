@@ -5,7 +5,7 @@ category:
 tutorial:
 source: https://gist.github.com/Mark-McCracken/f139426faa4e67c10c41ae957da1fa41
 github:
-description: "Calculates NYSIIS code for `string`."
+description: "Calculates NYSIIS code for <string>."
 arguments:
   - name: string
     type: STRING
