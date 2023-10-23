@@ -10,7 +10,7 @@ arguments:
   - name: url
     type: STRING
     description:
-  - name: url_type
+  - name: part
     type: INT
     description:
 output:
