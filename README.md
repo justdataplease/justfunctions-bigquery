@@ -66,6 +66,4 @@ Special thanks to [BigFunctions team](https://unytics.io/bigfunctions/) for thei
 Join us in our quest to make BigQuery even more powerful. If you have suggestions, UDFs to contribute, or any feedback,
 feel free to get involved!
 
-Special Thanks to [BigFunctions team](https://unytics.io/bigfunctions/) for the great work they have done.
-
 Created by the [JustDataPlease team](https://justdataplease.com).
