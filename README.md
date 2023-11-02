@@ -57,9 +57,23 @@ python bigquery/deploy.py
 
 ✨ Explore the freshly deployed functions in BigQuery and refer to the locally-generated markdown documentation in functions_documentation.md! ✨
 
-## Acknowledgments
 
-Special thanks to [BigFunctions team](https://unytics.io/bigfunctions/) for their inspiring project.
+## Add you own functions
+
+1. Just copy & paste a .yaml file e.g clean_url.yaml for SQL based UDF or parse_useragent.yaml for JS based UDF
+2. Rename it (the name of the file is the name of the final function) e.g myfile.yaml
+3. Update the yaml file as needed
+4. Run the main script:
+
+```bash
+python bigquery/deploy.py
+```
+
+## BigQuery Functions Resources
+
+- [Google BigQuery](https://cloud.google.com/bigquery/docs/reference/standard-sql/functions-and-operators) - Native Functions
+- [BigFunctions](https://unytics.io/bigfunctions/) - Multipurpose Functions
+- [CartoDB](https://github.com/CartoDB/analytics-toolbox-core) - Geospatial Functions
 
 ## Join Us
 
