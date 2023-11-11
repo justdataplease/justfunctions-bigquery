@@ -1,0 +1,35 @@
+type: function_sql
+category:
+  - NLP
+  - text
+  - new
+  - featured
+tutorial:
+public: true
+description: "Normalize given <string> by converting it to lowercase, applying transliteration, removing special characters and extra spaces."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "🎉 Welcome to Athens in 2023! Καλώς ήρθες!"
+    output: "welcome to athens in 2023"
+    region: ALL
+code: |
+  TRIM(
+    _project_id_._dataset_id_.remove_extra_whitespaces(
+        _project_id_._dataset_id_.transliterate_anyascii(
+              _project_id_._dataset_id_.clean_special_symbols(
+                    LOWER(
+                      string
+                    )
+              )
+        )
+    )
+  )

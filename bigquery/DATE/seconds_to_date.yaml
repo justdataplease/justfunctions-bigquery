@@ -1,0 +1,22 @@
+type: function_sql
+category:
+  - date
+tutorial:
+source:
+github:
+description: "Converts the <seconds> to date format '%Y-%m-%d'."
+arguments:
+  - name: seconds
+    type: INT64
+    description:
+output:
+  name: date
+  type: DATE
+  description:
+examples:
+  - description: ""
+    arguments:
+      - 1687613655
+    output: "2023-06-24"
+    region: ALL
+code: DATE(FORMAT_DATE('%Y-%m-%d',TIMESTAMP_SECONDS(seconds)))

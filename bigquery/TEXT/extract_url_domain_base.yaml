@@ -1,12 +1,11 @@
 type: function_sql
 category:
   - text
-  - email
   - URL
 tutorial:
 source:
 github:
-description: "Extract the domain base from a <url> or an <email>."
+description: "Extract the domain base of a <url>."
 arguments:
   - name: url
     type: STRING

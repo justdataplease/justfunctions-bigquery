@@ -1,0 +1,46 @@
+type: procedure
+category:
+  - Operations
+  - new
+  - featured
+tutorial: https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery
+source: https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery
+description: Generates a json_schema to use with JustSQL GPT (https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery).
+arguments:
+  - name: project_id
+    type: string
+  - name: dataset_id
+    type: string
+  - name: tables
+    type: array<string>
+output:
+  name: json_schema
+  type: string
+examples:
+  - description: ""
+    arguments:
+      - 'justfunctions'
+      - 'searchconsole'
+      - 'searchdata_site_impression'
+    output: '{ "tables": [{ "table_name": "searchdata_site_impression", "columns": [{ "name": "data_date","type":"DATE"},{ "name": "site_url","type":"STRING"},{ "name": "query","type":"STRING"},{ "name": "country","type":"STRING"},{ "name": "device","type":"STRING"},{ "name": "impressions","type":"INT64"},{ "name": "clicks","type":"INT64"}] }'
+    region: ALL
+code: |
+  DECLARE query_string STRING;
+  DECLARE json_schema STRING DEFAULT '';
+  DECLARE tables_string STRING;
+
+  SET tables_string = ARRAY_TO_STRING(ARRAY(SELECT '\'' || x || '\'' FROM UNNEST(tables) AS x), ',');
+
+  SET query_string = CONCAT(
+    'SELECT ',
+    'CONCAT(\'{ "tables": [\', STRING_AGG(table_schema_, \',\' ORDER BY table_name), \'] }\' ) AS json_schema ',
+    'FROM (  SELECT  table_name,table_schema,table_catalog,',
+    'CONCAT(\'{ "table_name": "\', CONCAT(table_catalog,\'.\',table_schema,\'.\',table_name), \'", "columns": [\', STRING_AGG(CONCAT(\'{ "name": "\',column_name,\'","type":"\',data_type,\'"}\'), \',\'),\'] }\') AS table_schema_ ',
+    'FROM \`',project_id,'.',dataset_id,'.INFORMATION_SCHEMA.COLUMNS\` ',
+    'WHERE table_name IN (', tables_string, ') ',
+    'GROUP BY 1,2,3 ) A'
+  );
+
+  EXECUTE IMMEDIATE query_string INTO json_schema;
+  SELECT json_schema;
+

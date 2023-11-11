@@ -17,7 +17,6 @@ examples:
   - description: ""
     arguments:
       - "Hi     there\n."
-      - " "
     output: "Hi there\n."
     region: ALL
-code: REGEXP_REPLACE(string, r'\s+','')
+code: REGEXP_REPLACE(string, r'\s+',' ')

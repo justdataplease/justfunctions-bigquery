@@ -1,0 +1,32 @@
+type: function_sql
+category:
+  - text
+  - url
+tutorial:
+source: https://stackoverflow.com/questions/13831391/bigquery-url-decode/
+github:
+description: "Decodes <url>."
+arguments:
+  - name: url
+    type: STRING
+    description:
+output:
+  name: decoded_url
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "https%3A%2F%2Fjustdataplease.com%2Fjustfunctions-bigquery%2F%3Futm_campaign%3Dtest"
+    output: "https://justdataplease.com/justfunctions-bigquery/?utm_campaign=test"
+    region: ALL
+code: |
+  ((
+    SELECT STRING_AGG(
+      IF(REGEXP_CONTAINS(y, r'^%[0-9a-fA-F]{2}'), 
+        SAFE_CONVERT_BYTES_TO_STRING(FROM_HEX(REPLACE(y, '%', ''))), y), '' 
+      ORDER BY i
+      )
+    FROM UNNEST(REGEXP_EXTRACT_ALL(url, r"%[0-9a-fA-F]{2}(?:%[0-9a-fA-F]{2})*|[^%]+")) y
+    WITH OFFSET AS i 
+  ))

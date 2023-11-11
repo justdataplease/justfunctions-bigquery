@@ -1,11 +1,11 @@
 type: function_sql
 category:
   - text
-  - URL
+  - email
 tutorial:
 source:
 github:
-description: "Extract the domain of a <url>."
+description: "Extract the domain base of an <email>."
 arguments:
   - name: url
     type: STRING
@@ -17,7 +17,7 @@ output:
 examples:
   - description: ""
     arguments:
-      - "https://hey.com/me/?231#213"
-    output: "hey.com"
+      - "jason@justdataplease.com"
+    output: "justdataplease"
     region: ALL
-code: NET.REG_DOMAIN(url)
+code: REPLACE (NET.REG_DOMAIN(url), CONCAT('.',NET.PUBLIC_SUFFIX(url)),"")

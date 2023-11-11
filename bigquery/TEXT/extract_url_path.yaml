@@ -3,16 +3,17 @@ category:
   - new
   - text
   - URL
+  - featured
 tutorial:
 source:
 github:
-description: "Extracts url path from <url>"
+description: "Extracts url path from <url>. Optionally remove url tail."
 arguments:
   - name: url
     type: STRING
     description:
   - name: clean_url_tail
-    type: INT
+    type: BOOL
     description:
 output:
   name: url_domain
@@ -22,11 +23,11 @@ examples:
   - description: ""
     arguments:
       - "https://hey.com/me/?parameter=1"
-      - 1
+      - TRUE
     output: "/me/"
     region: ALL
 code: |
-  CASE WHEN clean_url_tail=1 THEN 
+  CASE WHEN clean_url_tail THEN 
     SPLIT(SPLIT(url,NET.HOST(url))[SAFE_OFFSET(1)],'?')[SAFE_OFFSET(0)]
   ELSE
     SPLIT(url,NET.HOST(url))[SAFE_OFFSET(1)]

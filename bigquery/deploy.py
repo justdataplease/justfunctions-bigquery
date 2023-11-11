@@ -4,6 +4,7 @@ import jinja2
 import os
 from dotenv import load_dotenv
 from secrets import projects
+import copy
 
 load_dotenv()
 TEMPLATE_FOLDER = "./bigquery/templates"
@@ -40,14 +41,16 @@ def construct_function(conf, project_id, dataset_id, function_name, filename):
     :param filename:
     :return:
     """
-    template_file = f'{TEMPLATE_FOLDER}/{conf["type"]}.sql'
+    conf_ = copy.deepcopy(conf)
+    conf_['code'] = conf_['code'].replace("_project_id_", project_id).replace("_dataset_id_", dataset_id)
+    template_file = f'{TEMPLATE_FOLDER}/{conf_["type"]}.sql'
     template = jinja2.Template(open(template_file, encoding='utf-8').read())
     query = template.render(
         project_id=project_id,
         dataset_id=dataset_id,
         function_name=function_name,
         filename=filename,
-        **conf,
+        **conf_,
     )
     return query
 
@@ -165,7 +168,7 @@ def deploy_all_functions(project_id, allow_private, datasets, cloud_storage_dire
                     conf['title'] = construct_function_name(conf=conf, function_name=filename.split(".")[0])
                     conf['slug'] = filename.split(".")[0]
                     conf['tags'] = conf['category']
-                    conf['region'] = datasets[0]
+                    conf['region'] = ",".join(datasets)
                     conf['github'] = f"[link]({conf.get('github')})" if conf.get('github') else ""
                     conf['source'] = f"[link]({conf.get('source')})" if conf.get('source') else ""
                     conf['tutorial'] = f"[link]({conf.get('tutorial')})" if conf.get('tutorial') else ""
@@ -209,7 +212,7 @@ def create_md_file(functions_list, filename='functions_documentation.md'):
     :return:
     """
     with open(filename, 'w', encoding='utf-8') as md_file:
-        md_file.write("# Documentation for SQL Functions and Procedures\n\n")
+        md_file.write("# Documentation for BigQuery Open Source library of UDFs Functions and Procedures | by JustDataPlease\n\n")
 
         # Contents Section
         md_file.write("## Contents\n")
@@ -221,15 +224,21 @@ def create_md_file(functions_list, filename='functions_documentation.md'):
         for idx, func in enumerate(functions_list, 1):
             link_slug = func['slug']
             md_file.write(f"## <a id='{link_slug}'></a>{idx}. {func['title']}\n\n")
-            md_file.write(f"- **Type**: {func['ftype']}\n")
-            md_file.write(f"- **Tags**: {', '.join(func['tags'])}\n")
-            md_file.write(f"- **Region**: {func['region']}\n")
-            md_file.write(f"- **Description**: {func['description']}\n\n")
-            md_file.write("```sql\n")
-            md_file.write(func['statement'])
-            md_file.write("\n```\n")
-            md_file.write(f"**Example Query**:\n\n```sql\n{func['example_query']}\n```\n")
-            md_file.write(f"\n**Example Output**:\n\n```\n{func['example_output']}\n```\n")
+            if func.get('ftype'):
+                md_file.write(f"- **Type**: {func['ftype']}\n")
+            if func.get('tags'):
+                md_file.write(f"- **Tags**: {', '.join(func['tags'])}\n")
+            if func.get('region'):
+                md_file.write(f"- **Region**: {func['region']}\n")
+            if func.get('description'):
+                md_file.write(f"- **Description**: {func['description']}\n\n")
+            if func.get('statement'):
+                md_file.write("```sql\n")
+                md_file.write(func['statement'])
+                md_file.write("\n```\n")
+            if func.get('example_query'):
+                md_file.write(f"**Example Query**:\n\n```sql\n{func['example_query']}\n```\n")
+                md_file.write(f"\n**Example Output**:\n\n```\n{func['example_output']}\n```\n")
             md_file.write("---\n")
 
     print(f"Documentation has been written to {filename}")
@@ -255,7 +264,7 @@ def run():
             documentation = deploy_all_functions(project_id, allow_private, datasets, cloud_storage_directory,
                                                  specific=specific)
     except Exception as exc:
-        return exc
+        raise exc
 
     # Write documentation
     doc_columns = ['title', 'slug', 'ftype', 'source', 'tutorial', 'tags', 'github', 'region', 'description',
@@ -263,6 +272,7 @@ def run():
 
     data = process_documentation(documentation, doc_columns)
     create_md_file(data)
+    print("Finished")
 
 
 if __name__ == '__main__':

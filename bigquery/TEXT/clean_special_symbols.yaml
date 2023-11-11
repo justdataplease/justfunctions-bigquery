@@ -1,0 +1,22 @@
+type: function_sql
+category:
+  - NLP
+  - text
+source:
+public: true
+description: "Clean special symbols in a `string` using custom symbols."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: cleaned_string
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "Vacation✈️ time!🌴😀🏖️"
+    output: "vacation time"
+    region: ALL
+code: REGEXP_REPLACE(string, '''[^\\p{L}\\p{N}\\s]+''', '')

@@ -2,6 +2,7 @@ type: function_sql
 category:
   - text
   - email
+  - featured
 tutorial:
 source:
 github:
@@ -20,4 +21,4 @@ examples:
       - "HeLLo+other@gmail.com"
     output: "hello@gmail.com"
     region: ALL
-code: LOWER(REGEXP_REPLACE(email,r'(\+\w+)(@)', r'\2'))
+code: LOWER(_project_id_._dataset_id_.remove_email_plus_address(email))

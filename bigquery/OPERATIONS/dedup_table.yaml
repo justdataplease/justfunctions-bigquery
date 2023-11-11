@@ -2,6 +2,7 @@ type: procedure
 category:
   - Operations
   - new
+  - featured
 description: Creates a deduplicated version of <table>. It keeps the chronologically (`timestamp_column`) latest row of the `unique column` or uses other methods based on arguments availability. Arguments `timestamp_column`, `unique_column`, `output_table_suffix` are optional.
 arguments:
   - name: table_name
