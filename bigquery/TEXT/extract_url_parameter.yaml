@@ -1,7 +1,7 @@
 type: function_sql
 category:
   - text
-  - URL
+  - url
   - new
 tutorial:
 source:

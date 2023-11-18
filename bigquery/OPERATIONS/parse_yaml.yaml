@@ -1,0 +1,38 @@
+type: function_js
+category:
+  - operations
+  - text
+  - new
+tutorial:
+source:
+github:
+description: "Converts YAML <string> to JSON."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: parsed_yaml
+  type: json
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "---
+         updated_at:
+         - 2023-11-12 08:08:25.291779000 Z
+         - 2023-11-12 08:25:18.648572080 Z
+         status:
+         - new
+         - canceled
+         "
+    output: { "status": [ "new","canceled" ],"updated_at": [ "2023-11-12T08:08:25.291Z","2023-11-12T08:25:18.648Z" ] }
+    region: ALL
+code: |
+  try {
+    return jsyaml.load(string);
+  } catch(e) {
+    return '{}';
+  }
+libraries:
+  - cloudstorage_url: js-yaml.min.js

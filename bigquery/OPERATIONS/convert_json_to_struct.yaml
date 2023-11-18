@@ -1,0 +1,40 @@
+type: function_js
+category:
+  - operations
+  - text
+  - new
+tutorial:
+source:
+github:
+description: "Converts JSON <string> to STRUCT."
+arguments:
+  - name: string
+    type: string
+    description:
+output:
+  name: converted
+  type: ARRAY<STRUCT<key STRING, value STRING>>
+  description:
+examples:
+  - description: ""
+    arguments:
+      - { "time": { "new_value": "17:00","old_value": "16:30" }, "price": { "new_value": "1","old_value": "2" } }
+    output: |
+      time
+      {"new_value":"17:00","old_value":"16:30"}
+
+      price
+      {"new_value":"1","old_value":"2"}
+    region: ALL
+code: |
+  try {
+    var obj = JSON.parse(string);
+    var keys = Object.keys(obj);
+    var arr = [];
+    for (i = 0; i < keys.length; i++) {
+        arr.push({'key': keys[i], 'value': JSON.stringify(obj[keys[i]])});
+    }
+    return arr;
+  } catch(e) {
+      return '{}';
+  }

@@ -1,11 +1,11 @@
 type: procedure
 category:
-  - Operations
+  - operations
   - new
   - featured
 tutorial: https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery
 source: https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery
-description: Generates a json_schema to use with JustSQL GPT (https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery).
+description: Generates a JSON schema to use with JustSQL GPT (https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery).
 arguments:
   - name: project_id
     type: string
@@ -20,9 +20,9 @@ examples:
   - description: ""
     arguments:
       - 'justfunctions'
-      - 'searchconsole'
-      - 'searchdata_site_impression'
-    output: '{ "tables": [{ "table_name": "searchdata_site_impression", "columns": [{ "name": "data_date","type":"DATE"},{ "name": "site_url","type":"STRING"},{ "name": "query","type":"STRING"},{ "name": "country","type":"STRING"},{ "name": "device","type":"STRING"},{ "name": "impressions","type":"INT64"},{ "name": "clicks","type":"INT64"}] }'
+      - 'eu'
+      - [ 'date_calendar' ]
+    output: '{ "tables": [{ "table_name": "justfunctions.eu.date_calendar", "columns": [{ "name": "date","type":"DATE"},{ "name": "Quarter","type":"STRING"},{ "name": "month_name","type":"STRING"},{ "name": "epoch","type":"INT64"},{ "name": "date_id","type":"INT64"},{ "name": "day_of_month","type":"INT64"},{ "name": "day_suffix","type":"STRING"}] }] }'
     region: ALL
 code: |
   DECLARE query_string STRING;

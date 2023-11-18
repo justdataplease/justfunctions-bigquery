@@ -22,6 +22,11 @@ examples:
       - "καλημέρα"
     output: "kalimera"
     region: ALL
-code: return utils.anyAscii(string);
+code: |
+  try {
+    return utils.anyAscii(string);
+  } catch (e) {
+    return string
+  }
 libraries:
   - cloudstorage_url: transliteration.js

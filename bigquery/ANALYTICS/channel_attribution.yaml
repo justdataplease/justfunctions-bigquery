@@ -1,0 +1,130 @@
+type: function_sql
+category:
+  - analytics
+  - text
+source:
+public: true
+description: "Perform channel attribution from source, medium and campaign name."
+arguments:
+  - name: source
+    type: string
+    description:
+  - name: medium
+    type: string
+    description:
+  - name: campaign_name
+    type: string
+    description:
+output:
+  name: channel
+  type: string
+  description:
+examples:
+  - description: ""
+    arguments:
+      - shopify
+      - paid
+      - test
+    output: "paid shopping"
+    region: ALL
+code: |
+  CASE
+    -------direct
+    WHEN  source IS NULL AND medium IS NULL THEN 'direct'
+    WHEN  source='' AND medium='' THEN 'direct'
+    WHEN  source IN ('(direct)','direct') AND medium IN ('(none)','none','(not set)','not set','') THEN 'direct'
+    
+    -------cross-network
+    WHEN REGEXP_CONTAINS(campaign_name, 'cross-network') THEN 'cross-network'
+    
+    -------paid-shopping
+    WHEN (
+      REGEXP_CONTAINS(
+        source,
+        'alibaba|amazon|google shopping|shopify|etsy|ebay|stripe|walmart'
+      )
+      OR REGEXP_CONTAINS(
+        campaign_name,
+        '^(.*(([^a-df-z]|^)shop|shopping).*)$'
+      )
+    )
+    AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid shopping'
+   
+    -------paid search
+    WHEN REGEXP_CONTAINS(
+      source,
+      'baidu|bing|duckduckgo|ecosia|google|yahoo|yandex'
+    )
+    AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid search'
+    
+    -------paid social
+    WHEN REGEXP_CONTAINS(
+      source,
+      'badoo|facebook|fb|instagram|linkedin|pinterest|tiktok|twitter|whatsapp'
+    )
+    AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid social'
+  
+    -------paid video
+    WHEN REGEXP_CONTAINS(
+      source,
+      'dailymotion|disneyplus|netflix|youtube|vimeo|twitch|vimeo|youtube'
+    )
+    AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid video'
+  
+    -------display
+    WHEN medium IN (
+      'display',
+      'banner',
+      'expandable',
+      'interstitial',
+      'cpm'
+    ) THEN 'display'
+  
+    -------paid other
+    WHEN REGEXP_CONTAINS(medium, r"^(.*cp.*|ppc|retargeting|paid.*)$")
+     THEN 'Paid Other'
+
+    -------organic shopping
+    WHEN REGEXP_CONTAINS(
+      source,
+      'alibaba|amazon|google shopping|shopify|etsy|ebay|stripe|walmart'
+    )
+    OR REGEXP_CONTAINS(
+      campaign_name,
+      '^(.*(([^a-df-z]|^)shop|shopping).*)$'
+    ) THEN 'organic shopping'
+    -------organic social
+    WHEN REGEXP_CONTAINS(
+      source,
+      'badoo|facebook|fb|instagram|linkedin|pinterest|tiktok|twitter|whatsapp'
+    )
+    OR medium IN (
+      'social',
+      'social-network',
+      'social-media',
+      'sm',
+      'social network',
+      'social media'
+    ) THEN 'organic social'
+    -------organic video
+    WHEN REGEXP_CONTAINS(
+      source,
+      'dailymotion|disneyplus|netflix|youtube|vimeo|twitch|vimeo|youtube'
+    )
+    OR REGEXP_CONTAINS(medium, '^(.*video.*)$') THEN 'organic video'
+    -------organic search
+    WHEN REGEXP_CONTAINS(
+      source,
+      'baidu|bing|duckduckgo|ecosia|google|yahoo|yandex'
+    )
+    OR medium = 'organic' THEN 'organic search'
+    -- Other
+    WHEN medium IN ("referral", "app", "link") THEN 'referral'
+    WHEN REGEXP_CONTAINS(source, 'email|e-mail|e_mail|e mail')
+    OR REGEXP_CONTAINS(medium, 'email|e-mail|e_mail|e mail') THEN 'email'
+    WHEN medium = 'affiliate' THEN 'affiliates'
+    WHEN medium = 'audio' THEN 'audio'
+    WHEN medium = 'sms' THEN 'sms'
+    WHEN REGEXP_CONTAINS(medium, r'push$|mobile|notification') THEN 'mobile push notifications'
+    ELSE 'unassigned'
+  END
