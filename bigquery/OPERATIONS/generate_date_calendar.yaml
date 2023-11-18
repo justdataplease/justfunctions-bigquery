@@ -22,9 +22,43 @@ examples:
       - '2020-01-01'
       - '2023-01-01'
     output: |
-        |   date_id |    date     |     epoch     | day_suffix |  day_name  | day_name_abbr | day_of_week | day_of_month | day_of_quarter | day_of_year | week_of_month | week_of_year | week_of_year_iso | month | month_name | month_name_abbr | quarter | quarter_name | year | start_of_week | start_of_week_saturday | start_of_month | mid_of_month | start_of_quarter | start_of_year | start_of_financial_year | end_of_financial_year | end_of_week | end_of_month | end_of_quarter | end_of_year |  yyyymm |  yyyymmdd | month_desc | quarter_desc | week_desc | is_weekend |
-        |----------:|------------:|--------------:|-----------:|------------:|--------------:|------------:|--------------:|---------------:|------------:|---------------:|--------------:|-----------------:|-------:|------------:|----------------:|--------:|-------------:|------:|--------------:|----------------:|---------:|-----------:|----------------:|-------------:|----------------:|------------------:|------------:|------------:|--------------:|------------:|--------:|----------:|-----------:|--------------:|-----------:|-----------------:|
-        |  20200101 |  2020-01-01 |   1577836800 |       1th |  Wednesday  |          Wed |          4  |           1  |              1  |          1  |            1  |           1  |           2020-W01-3  |     1  |    January  |            Jan  |      1  |          Q1  |  2020  |  2019-12-30  |           2019-12-28  |  2020-01-01  |  2020-01-15  |     2020-01-01  |  2020-01-01  |          2019-10-01  |        2020-09-30  |  2020-01-03  | 2020-01-31  |   2020-03-31  | 2020-12-31  | 202001  | 20200101  |   2020-Jan  |     2020-Q1  |    2020-W1  |     FALSE    |
+      - date_id: 20200101
+      - date: 2020-01-01
+      - epoch: 1577836800
+      - day_suffix: 1th
+      - day_name: Wednesday
+      - day_name_abbr: Wed
+      - day_of_week: 4
+      - day_of_month: 1
+      - day_of_quarter: 1
+      - day_of_year: 1
+      - week_of_month: 1
+      - week_of_year: 1
+      - week_of_year_iso: 2020-W01-3
+      - month: 1
+      - month_name: January
+      - month_name_abbr: Jan
+      - quarter: 1
+      - quarter_name: Q1
+      - year: 2020
+      - start_of_week: 2019-12-30
+      - start_of_week_saturday: 2019-12-28
+      - start_of_month: 2020-01-01
+      - mid_of_month: 2020-01-15
+      - start_of_quarter: 2020-01-01
+      - start_of_year: 2020-01-01
+      - end_of_week: 2020-01-03
+      - end_of_month: 2020-01-31
+      - end_of_quarter: 2020-03-31
+      - end_of_year: 2020-12-31
+      - start_of_fiscal_year: 2019-10-01
+      - end_of_fiscal_year: 2020-09-30
+      - yyyymm: 202001
+      - yyyymmdd: 20200101
+      - month_desc: 2020-Jan
+      - quarter_desc: 2020-Q1
+      - week_desc: 2020-W1
+      - is_weekend: FALSE
     region: ALL
 code: |
     -- Drop the table if it exists
