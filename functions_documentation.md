@@ -47,8 +47,15 @@
 44. [clean_special_symbols_custom(string)](#clean_special_symbols_custom)
 45. [dedup_table(table_name, timestamp_column, unique_column, output_table_suffix)](#dedup_table)
 46. [generate_justsql_schema(project_id, dataset_id, tables)](#generate_justsql_schema)
-47. [percentile(arr, percentile)](#percentile)
-48. [seconds_to_date(seconds)](#seconds_to_date)
+47. [parse_yaml(string)](#parse_yaml)
+48. [convert_json_to_struct(string)](#convert_json_to_struct)
+49. [generate_date_calendar(table_name, start_date, end_date)](#generate_date_calendar)
+50. [percentile(arr, percentile)](#percentile)
+51. [seconds_to_date(seconds)](#seconds_to_date)
+52. [generate_date_calendar(table_name, start_date, end_date)](#generate_date_calendar)
+53. [generate_date_calendar_with_holidays(table_name, start_date, end_date, country)](#generate_date_calendar_with_holidays)
+54. [shift_date(date, years, months, days)](#shift_date)
+55. [channel_attribution(source, medium, campaign_name)](#channel_attribution)
 
 ---
 ## <a id='clean_url'></a>1. clean_url(url)
@@ -78,7 +85,7 @@ hey.com/me
 ## <a id='split_url'></a>2. split_url(url, part)
 
 - **Type**: SQL
-- **Tags**: text, URL
+- **Tags**: text, url
 - **Region**: us,eu
 - **Description**: Splits a <url> into parts, using '/' symbol.
 
@@ -307,7 +314,7 @@ SELECT `justfunctions.eu.surrogate_key_str`("python")
 ## <a id='extract_url_domain'></a>8. extract_url_domain(url)
 
 - **Type**: SQL
-- **Tags**: text, URL
+- **Tags**: text, url
 - **Region**: us,eu
 - **Description**: Extract the domain of a <url>.
 
@@ -331,7 +338,7 @@ hey.com
 ## <a id='extract_url_prefix'></a>9. extract_url_prefix(url)
 
 - **Type**: SQL
-- **Tags**: text, URL
+- **Tags**: text, url
 - **Region**: us,eu
 - **Description**: Extracts url prefix from <url>.
 
@@ -355,7 +362,7 @@ en
 ## <a id='extract_url_suffix'></a>10. extract_url_suffix(url)
 
 - **Type**: SQL
-- **Tags**: text, URL
+- **Tags**: text, url
 - **Region**: us,eu
 - **Description**: Extracts url suffix from <url>.
 
@@ -472,7 +479,7 @@ SELECT `justfunctions.eu.fuzzy_distance_leven`("pyhtno","python")
 ## <a id='extract_url_parameter'></a>13. extract_url_parameter(url, parameter)
 
 - **Type**: SQL
-- **Tags**: text, URL, new
+- **Tags**: text, url, new
 - **Region**: us,eu
 - **Description**: Extracts parameter value from <url>.
 
@@ -542,7 +549,7 @@ SELECT `justfunctions.eu.detect_department_email`("sales@dev.io")
 ## <a id='extract_url_domain_base'></a>15. extract_url_domain_base(url)
 
 - **Type**: SQL
-- **Tags**: text, URL
+- **Tags**: text, url
 - **Region**: us,eu
 - **Description**: Extract the domain base of a <url>.
 
@@ -566,7 +573,7 @@ hey
 ## <a id='detect_free_email_domain'></a>16. detect_free_email_domain(email_domain)
 
 - **Type**: SQL
-- **Tags**: text, email, new
+- **Tags**: text, email
 - **Region**: us,eu
 - **Description**: Detects if <email_domain> belongs to a free email service (gmail, yahoo, outlook, etc).
 
@@ -646,7 +653,7 @@ tablet
 ## <a id='extract_url_path'></a>19. extract_url_path(url, clean_url_tail)
 
 - **Type**: SQL
-- **Tags**: new, text, URL, featured
+- **Tags**: text, url, featured
 - **Region**: us,eu
 - **Description**: Extracts url path from <url>. Optionally remove url tail.
 
@@ -674,7 +681,7 @@ SELECT `justfunctions.eu.extract_url_path`("https://hey.com/me/?parameter=1","Tr
 ## <a id='extract_url_tail'></a>20. extract_url_tail(url)
 
 - **Type**: SQL
-- **Tags**: text, URL
+- **Tags**: text, url
 - **Region**: us,eu
 - **Description**: Extracts url tail from <url>.
 
@@ -698,7 +705,7 @@ parameter=1
 ## <a id='extract_url_language'></a>21. extract_url_language(url)
 
 - **Type**: SQL
-- **Tags**: text, URL, new
+- **Tags**: text, url, new
 - **Region**: us,eu
 - **Description**: Extract language from a <url>.
 
@@ -773,7 +780,7 @@ english
 ## <a id='extract_all_url_parameters'></a>22. extract_all_url_parameters(url)
 
 - **Type**: JS
-- **Tags**: text, URL, new
+- **Tags**: text, url, new
 - **Region**: us,eu
 - **Description**: Extracts all parameters from <url> in JSON format.
 
@@ -1254,7 +1261,12 @@ vacation time
 
 ```sql
 CREATE OR REPLACE FUNCTION `justfunctions.eu.transliterate_anyascii`(`string` string) RETURNS string
-	LANGUAGE js AS r'''return utils.anyAscii(string);''' OPTIONS ( description = '''Converts Unicode characters to their best ASCII representation.'''  , library = [  "gs://justfunctions/bigquery-functions/transliteration.js" ]  )
+	LANGUAGE js AS r'''try {
+  return utils.anyAscii(string);
+} catch (e) {
+  return string
+}
+''' OPTIONS ( description = '''Converts Unicode characters to their best ASCII representation.'''  , library = [  "gs://justfunctions/bigquery-functions/transliteration.js" ]  )
 ```
 **Example Query**:
 
@@ -1602,7 +1614,7 @@ vacation time
 ## <a id='dedup_table'></a>45. dedup_table(table_name, timestamp_column, unique_column, output_table_suffix)
 
 - **Type**: PROCEDURE
-- **Tags**: Operations, new, featured
+- **Tags**: operations, featured
 - **Region**: us,eu
 - **Description**: Creates a deduplicated version of <table>. It keeps the chronologically (`timestamp_column`) latest row of the `unique column` or uses other methods based on arguments availability. Arguments `timestamp_column`, `unique_column`, `output_table_suffix` are optional.
 
@@ -1672,14 +1684,14 @@ your_project.your_dataset.your_table.your_table_dedup
 ## <a id='generate_justsql_schema'></a>46. generate_justsql_schema(project_id, dataset_id, tables)
 
 - **Type**: PROCEDURE
-- **Tags**: Operations, new, featured
+- **Tags**: operations, new, featured
 - **Region**: us,eu
-- **Description**: Generates a json_schema to use with JustSQL GPT (https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery).
+- **Description**: Generates a JSON schema to use with JustSQL GPT (https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery).
 
 ```sql
 CREATE OR REPLACE PROCEDURE `justfunctions.eu.generate_justsql_schema`(`project_id` string, `dataset_id` string, `tables` array<string>)
 options(
-    description = '''Generates a json_schema to use with JustSQL GPT (https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery).'''
+    description = '''Generates a JSON schema to use with JustSQL GPT (https://chat.openai.com/g/g-hzlGYume7-justsql-for-bigquery).'''
 )
 BEGIN
 
@@ -1708,16 +1720,154 @@ END;
 **Example Query**:
 
 ```sql
-CALL `justfunctions.eu.generate_justsql_schema`("justfunctions","searchconsole","searchdata_site_impression")
+CALL `justfunctions.eu.generate_justsql_schema`("justfunctions","eu","['date_calendar']")
 ```
 
 **Example Output**:
 
 ```
-{ "tables": [{ "table_name": "searchdata_site_impression", "columns": [{ "name": "data_date","type":"DATE"},{ "name": "site_url","type":"STRING"},{ "name": "query","type":"STRING"},{ "name": "country","type":"STRING"},{ "name": "device","type":"STRING"},{ "name": "impressions","type":"INT64"},{ "name": "clicks","type":"INT64"}] }
+{ "tables": [{ "table_name": "justfunctions.eu.date_calendar", "columns": [{ "name": "date","type":"DATE"},{ "name": "Quarter","type":"STRING"},{ "name": "month_name","type":"STRING"},{ "name": "epoch","type":"INT64"},{ "name": "date_id","type":"INT64"},{ "name": "day_of_month","type":"INT64"},{ "name": "day_suffix","type":"STRING"}] }] }
 ```
 ---
-## <a id='percentile'></a>47. percentile(arr, percentile)
+## <a id='parse_yaml'></a>47. parse_yaml(string)
+
+- **Type**: JS
+- **Tags**: operations, text, new
+- **Region**: us,eu
+- **Description**: Converts YAML <string> to JSON.
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.parse_yaml`(`string` string) RETURNS json
+	LANGUAGE js AS r'''try {
+  return jsyaml.load(string);
+} catch(e) {
+  return '{}';
+}
+''' OPTIONS ( description = '''Converts YAML <string> to JSON.'''  , library = [  "gs://justfunctions/bigquery-functions/js-yaml.min.js" ]  )
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.parse_yaml`("--- updated_at: - 2023-11-12 08:08:25.291779000 Z - 2023-11-12 08:25:18.648572080 Z status: - new - canceled ")
+```
+
+**Example Output**:
+
+```
+{'status': ['new', 'canceled'], 'updated_at': ['2023-11-12T08:08:25.291Z', '2023-11-12T08:25:18.648Z']}
+```
+---
+## <a id='convert_json_to_struct'></a>48. convert_json_to_struct(string)
+
+- **Type**: JS
+- **Tags**: operations, text, new
+- **Region**: us,eu
+- **Description**: Converts JSON <string> to STRUCT.
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.convert_json_to_struct`(`string` string) RETURNS ARRAY<STRUCT<key STRING, value STRING>>
+	LANGUAGE js AS r'''try {
+  var obj = JSON.parse(string);
+  var keys = Object.keys(obj);
+  var arr = [];
+  for (i = 0; i < keys.length; i++) {
+      arr.push({'key': keys[i], 'value': JSON.stringify(obj[keys[i]])});
+  }
+  return arr;
+} catch(e) {
+    return '{}';
+}
+''' OPTIONS ( description = '''Converts JSON <string> to STRUCT.'''  )
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.convert_json_to_struct`("{'time': {'new_value': '17:00', 'old_value': '16:30'}, 'price': {'new_value': '1', 'old_value': '2'}}")
+```
+
+**Example Output**:
+
+```
+- time: {"new_value":"17:00","old_value":"16:30"}
+- price: {"new_value":"1","old_value":"2"}
+
+```
+---
+## <a id='generate_date_calendar'></a>49. generate_date_calendar(table_name, start_date, end_date)
+
+- **Type**: PROCEDURE
+- **Tags**: operations, date, featured, new
+- **Region**: us,eu
+- **Description**: Generates a complete date calendar <table>.
+
+```sql
+CREATE OR REPLACE PROCEDURE `justfunctions.eu.generate_date_calendar`(`table_name` string, `start_date` string, `end_date` string)
+options(
+    description = '''Generates a complete date calendar <table>.'''
+)
+BEGIN
+
+-- Drop the table if it exists
+EXECUTE IMMEDIATE 'DROP TABLE IF EXISTS ' || table_name;
+
+-- Create the date_calendar table
+EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (date_id INT64 NOT NULL, date DATE NOT NULL, epoch INT64 NOT NULL, day_suffix STRING NOT NULL, day_name STRING NOT NULL, day_name_abbr STRING NOT NULL, day_of_week INT64 NOT NULL, day_of_month INT64 NOT NULL, day_of_quarter INT64 NOT NULL, day_of_year INT64 NOT NULL, week_of_month INT64 NOT NULL, week_of_year INT64 NOT NULL, week_of_year_iso STRING NOT NULL, month_ INT64 NOT NULL, month_name STRING NOT NULL, month_name_abbr STRING NOT NULL, quarter INT64 NOT NULL, quarter_name STRING NOT NULL, year INT64 NOT NULL, start_of_week DATE NOT NULL,start_of_week_saturday DATE NOT NULL, start_of_month DATE NOT NULL, mid_of_month DATE NOT NULL, start_of_quarter DATE NOT NULL, start_of_year DATE NOT NULL, end_of_week DATE NOT NULL, end_of_month DATE NOT NULL, end_of_quarter DATE NOT NULL, end_of_year DATE NOT NULL,start_of_fiscal_year DATE NOT NULL,end_of_fiscal_year DATE NOT NULL, yyyymm STRING NOT NULL, yyyymmdd STRING NOT NULL, month_desc STRING, quarter_desc STRING, week_desc STRING, is_weekend BOOL NOT NULL);';
+
+-- Populate the table
+EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' WITH date_range AS (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY("' || start_date || '","' || end_date  || '")) AS date) SELECT CAST(FORMAT_DATE("%Y%m%d", date) AS INT64) AS date_id, date AS date, UNIX_SECONDS(TIMESTAMP(date)) AS epoch, CONCAT(CAST(EXTRACT(DAY FROM date) AS STRING), "th") AS day_suffix, FORMAT_DATE("%A", date) AS day_name, FORMAT_DATE("%a", date) AS day_name_abbr, EXTRACT(DAYOFWEEK FROM date) AS day_of_week, EXTRACT(DAY FROM date) AS day_of_month, EXTRACT(DAY FROM date) - EXTRACT(DAY FROM DATE_TRUNC(date, QUARTER)) + 1 AS day_of_quarter, EXTRACT(DAYOFYEAR FROM date) AS day_of_year, EXTRACT(WEEK FROM date) - EXTRACT(WEEK FROM DATE_TRUNC(date, MONTH)) + 1 AS week_of_month, CAST(FORMAT_DATE("%V", date) AS INT64) AS week_of_year, FORMAT_DATE("%G-W%V-%u", date) AS week_of_year_iso, EXTRACT(MONTH FROM date) AS month, FORMAT_DATE("%B", date) AS month_name, FORMAT_DATE("%b", date) AS month_name_abbr, EXTRACT(QUARTER FROM date) AS quarter, CONCAT("Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_name, EXTRACT(YEAR FROM date) AS year, DATE_TRUNC(date, WEEK(MONDAY)) AS start_of_week,DATE_TRUNC(date, WEEK(SATURDAY)) AS start_of_week_saturday, DATE_TRUNC(date, MONTH) AS start_of_month, DATE_ADD(DATE_TRUNC(date, MONTH), INTERVAL 14 DAY) AS mid_of_month, DATE_TRUNC(date, QUARTER) AS start_of_quarter, DATE_TRUNC(date, YEAR) AS start_of_year, DATE_ADD(DATE_TRUNC(date, WEEK(SATURDAY)), INTERVAL 6 DAY) AS end_of_week, LAST_DAY(date, MONTH) AS end_of_month, LAST_DAY(date, QUARTER) AS end_of_quarter, LAST_DAY(date, YEAR) AS end_of_year,     CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date), 10, 1),    DATE(EXTRACT(YEAR FROM date) - 1, 10, 1)) AS DATE) AS start_of_fiscal_year,CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date) + 1, 9, 30),     DATE(EXTRACT(YEAR FROM date), 9, 30) ) AS DATE) AS end_of_fiscal_year,FORMAT_DATE("%Y%m", date) AS yyyymm, FORMAT_DATE("%Y%m%d", date) AS yyyymmdd, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-", FORMAT_DATE("%b", date)) AS month_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-","W",CAST(FORMAT_DATE("%V", date) AS INT64)) AS week_desc, CASE WHEN EXTRACT(DAYOFWEEK FROM date) IN (6, 7) THEN TRUE ELSE FALSE END AS is_weekend FROM date_range;';
+
+END;
+```
+**Example Query**:
+
+```sql
+CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar","2020-01-01","2023-01-01")
+```
+
+**Example Output**:
+
+```
+- date_id: 20200101
+- date: 2020-01-01
+- epoch: 1577836800
+- day_suffix: 1th
+- day_name: Wednesday
+- day_name_abbr: Wed
+- day_of_week: 4
+- day_of_month: 1
+- day_of_quarter: 1
+- day_of_year: 1
+- week_of_month: 1
+- week_of_year: 1
+- week_of_year_iso: 2020-W01-3
+- month: 1
+- month_name: January
+- month_name_abbr: Jan
+- quarter: 1
+- quarter_name: Q1
+- year: 2020
+- start_of_week: 2019-12-30
+- start_of_week_saturday: 2019-12-28
+- start_of_month: 2020-01-01
+- mid_of_month: 2020-01-15
+- start_of_quarter: 2020-01-01
+- start_of_year: 2020-01-01
+- end_of_week: 2020-01-03
+- end_of_month: 2020-01-31
+- end_of_quarter: 2020-03-31
+- end_of_year: 2020-12-31
+- start_of_fiscal_year: 2019-10-01
+- end_of_fiscal_year: 2020-09-30
+- yyyymm: 202001
+- yyyymmdd: 20200101
+- month_desc: 2020-Jan
+- quarter_desc: 2020-Q1
+- week_desc: 2020-W1
+- is_weekend: FALSE
+
+```
+---
+## <a id='percentile'></a>50. percentile(arr, percentile)
 
 - **Type**: SQL
 - **Tags**: STATISTICS, percentile
@@ -1746,7 +1896,7 @@ SELECT `justfunctions.eu.percentile`("[1.2, 2.3, 3.2, 4.2, 5]")
 3.2
 ```
 ---
-## <a id='seconds_to_date'></a>48. seconds_to_date(seconds)
+## <a id='seconds_to_date'></a>51. seconds_to_date(seconds)
 
 - **Type**: SQL
 - **Tags**: date
@@ -1768,5 +1918,317 @@ SELECT `justfunctions.eu.seconds_to_date`("1687613655")
 
 ```
 2023-06-24
+```
+---
+## <a id='generate_date_calendar'></a>52. generate_date_calendar(table_name, start_date, end_date)
+
+- **Type**: PROCEDURE
+- **Tags**: operations, date, featured, new
+- **Region**: us,eu
+- **Description**: Generates a complete date calendar <table>.
+
+```sql
+CREATE OR REPLACE PROCEDURE `justfunctions.eu.generate_date_calendar`(`table_name` string, `start_date` string, `end_date` string)
+options(
+    description = '''Generates a complete date calendar <table>.'''
+)
+BEGIN
+
+-- Drop the table if it exists
+EXECUTE IMMEDIATE 'DROP TABLE IF EXISTS ' || table_name;
+
+-- Create the date_calendar table
+EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (date_id INT64 NOT NULL, date DATE NOT NULL, epoch INT64 NOT NULL, day_suffix STRING NOT NULL, day_name STRING NOT NULL, day_name_abbr STRING NOT NULL, day_of_week INT64 NOT NULL, day_of_month INT64 NOT NULL, day_of_quarter INT64 NOT NULL, day_of_year INT64 NOT NULL, week_of_month INT64 NOT NULL, week_of_year INT64 NOT NULL, week_of_year_iso STRING NOT NULL, month_ INT64 NOT NULL, month_name STRING NOT NULL, month_name_abbr STRING NOT NULL, quarter INT64 NOT NULL, quarter_name STRING NOT NULL, year INT64 NOT NULL, start_of_week DATE NOT NULL,start_of_week_saturday DATE NOT NULL, start_of_month DATE NOT NULL, mid_of_month DATE NOT NULL, start_of_quarter DATE NOT NULL, start_of_year DATE NOT NULL, end_of_week DATE NOT NULL, end_of_month DATE NOT NULL, end_of_quarter DATE NOT NULL, end_of_year DATE NOT NULL,start_of_fiscal_year DATE NOT NULL,end_of_fiscal_year DATE NOT NULL, yyyymm STRING NOT NULL, yyyymmdd STRING NOT NULL, month_desc STRING, quarter_desc STRING, week_desc STRING, is_weekend BOOL NOT NULL, season STRING);';
+
+-- Populate the table
+EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' WITH date_range AS (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY("' || start_date || '","' || end_date  || '")) AS date) SELECT CAST(FORMAT_DATE("%Y%m%d", date) AS INT64) AS date_id, date AS date, UNIX_SECONDS(TIMESTAMP(date)) AS epoch, CONCAT(CAST(EXTRACT(DAY FROM date) AS STRING), "th") AS day_suffix, FORMAT_DATE("%A", date) AS day_name, FORMAT_DATE("%a", date) AS day_name_abbr, EXTRACT(DAYOFWEEK FROM date) AS day_of_week, EXTRACT(DAY FROM date) AS day_of_month, EXTRACT(DAY FROM date) - EXTRACT(DAY FROM DATE_TRUNC(date, QUARTER)) + 1 AS day_of_quarter, EXTRACT(DAYOFYEAR FROM date) AS day_of_year, EXTRACT(WEEK FROM date) - EXTRACT(WEEK FROM DATE_TRUNC(date, MONTH)) + 1 AS week_of_month, CAST(FORMAT_DATE("%V", date) AS INT64) AS week_of_year, FORMAT_DATE("%G-W%V-%u", date) AS week_of_year_iso, EXTRACT(MONTH FROM date) AS month, FORMAT_DATE("%B", date) AS month_name, FORMAT_DATE("%b", date) AS month_name_abbr, EXTRACT(QUARTER FROM date) AS quarter, CONCAT("Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_name, EXTRACT(YEAR FROM date) AS year, DATE_TRUNC(date, WEEK(MONDAY)) AS start_of_week,DATE_TRUNC(date, WEEK(SATURDAY)) AS start_of_week_saturday, DATE_TRUNC(date, MONTH) AS start_of_month, DATE_ADD(DATE_TRUNC(date, MONTH), INTERVAL 14 DAY) AS mid_of_month, DATE_TRUNC(date, QUARTER) AS start_of_quarter, DATE_TRUNC(date, YEAR) AS start_of_year, DATE_ADD(DATE_TRUNC(date, WEEK(SATURDAY)), INTERVAL 6 DAY) AS end_of_week, LAST_DAY(date, MONTH) AS end_of_month, LAST_DAY(date, QUARTER) AS end_of_quarter, LAST_DAY(date, YEAR) AS end_of_year,     CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date), 10, 1),    DATE(EXTRACT(YEAR FROM date) - 1, 10, 1)) AS DATE) AS start_of_fiscal_year,CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date) + 1, 9, 30),     DATE(EXTRACT(YEAR FROM date), 9, 30) ) AS DATE) AS end_of_fiscal_year,FORMAT_DATE("%Y%m", date) AS yyyymm, FORMAT_DATE("%Y%m%d", date) AS yyyymmdd, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-", FORMAT_DATE("%b", date)) AS month_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-","W",CAST(FORMAT_DATE("%V", date) AS INT64)) AS week_desc, CASE WHEN EXTRACT(DAYOFWEEK FROM date) IN (6, 7) THEN TRUE ELSE FALSE END AS is_weekend,CASE WHEN EXTRACT(MONTH FROM date) IN (3, 4, 5) THEN "Spring" WHEN EXTRACT(MONTH FROM date) IN (6, 7, 8) THEN "Summer" WHEN EXTRACT(MONTH FROM date) IN (9, 10, 11) THEN "Autumn" WHEN EXTRACT(MONTH FROM date) IN (12, 1, 2) THEN "Winter" ELSE "Unknown" END season FROM date_range;';
+
+END;
+```
+**Example Query**:
+
+```sql
+CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar","2020-01-01","2023-01-01")
+```
+
+**Example Output**:
+
+```
+- date_id: 20200101
+- date: 2020-01-01
+- epoch: 1577836800
+- day_suffix: 1th
+- day_name: Wednesday
+- day_name_abbr: Wed
+- day_of_week: 4
+- day_of_month: 1
+- day_of_quarter: 1
+- day_of_year: 1
+- week_of_month: 1
+- week_of_year: 1
+- week_of_year_iso: 2020-W01-3
+- month: 1
+- month_name: January
+- month_name_abbr: Jan
+- quarter: 1
+- quarter_name: Q1
+- year: 2020
+- start_of_week: 2019-12-30
+- start_of_week_saturday: 2019-12-28
+- start_of_month: 2020-01-01
+- mid_of_month: 2020-01-15
+- start_of_quarter: 2020-01-01
+- start_of_year: 2020-01-01
+- end_of_week: 2020-01-03
+- end_of_month: 2020-01-31
+- end_of_quarter: 2020-03-31
+- end_of_year: 2020-12-31
+- start_of_fiscal_year: 2019-10-01
+- end_of_fiscal_year: 2020-09-30
+- yyyymm: 202001
+- yyyymmdd: 20200101
+- month_desc: 2020-Jan
+- quarter_desc: 2020-Q1
+- week_desc: 2020-W1
+- is_weekend: FALSE
+- season: Winter
+
+```
+---
+## <a id='generate_date_calendar_with_holidays'></a>53. generate_date_calendar_with_holidays(table_name, start_date, end_date, country)
+
+- **Type**: PROCEDURE
+- **Tags**: operations, date, featured, new
+- **Region**: us,eu
+- **Description**: Generates a complete date calendar <table> with holidays for a given country and special days. Holidays are available for 2000-2030.
+
+```sql
+CREATE OR REPLACE PROCEDURE `justfunctions.eu.generate_date_calendar_with_holidays`(`table_name` string, `start_date` string, `end_date` string, `country` string)
+options(
+    description = '''Generates a complete date calendar <table> with holidays for a given country and special days. Holidays are available for 2000-2030.'''
+)
+BEGIN
+
+-- Drop the table if it exists
+EXECUTE IMMEDIATE 'DROP TABLE IF EXISTS ' || table_name;
+
+-- Create the date_calendar table
+EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (date_id INT64 NOT NULL, date DATE NOT NULL, epoch INT64 NOT NULL, day_suffix STRING NOT NULL, day_name STRING NOT NULL, day_name_abbr STRING NOT NULL, day_of_week INT64 NOT NULL, day_of_month INT64 NOT NULL, day_of_quarter INT64 NOT NULL, day_of_year INT64 NOT NULL, week_of_month INT64 NOT NULL, week_of_year INT64 NOT NULL, week_of_year_iso STRING NOT NULL, month_ INT64 NOT NULL, month_name STRING NOT NULL, month_name_abbr STRING NOT NULL, quarter INT64 NOT NULL, quarter_name STRING NOT NULL, year INT64 NOT NULL, start_of_week DATE NOT NULL,start_of_week_saturday DATE NOT NULL, start_of_month DATE NOT NULL, mid_of_month DATE NOT NULL, start_of_quarter DATE NOT NULL, start_of_year DATE NOT NULL, end_of_week DATE NOT NULL, end_of_month DATE NOT NULL, end_of_quarter DATE NOT NULL, end_of_year DATE NOT NULL,start_of_fiscal_year DATE NOT NULL,end_of_fiscal_year DATE NOT NULL, yyyymm STRING NOT NULL, yyyymmdd STRING NOT NULL, month_desc STRING, quarter_desc STRING, week_desc STRING, is_weekend BOOL NOT NULL, season STRING, holiday_name STRING, holiday_country STRING, special_day_name STRING);';
+
+-- Populate the table
+EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' WITH date_range AS (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY("' || start_date || '","' || end_date  || '")) AS date) SELECT CAST(FORMAT_DATE("%Y%m%d", date) AS INT64) AS date_id, date AS date, UNIX_SECONDS(TIMESTAMP(date)) AS epoch, CONCAT(CAST(EXTRACT(DAY FROM date) AS STRING), "th") AS day_suffix, FORMAT_DATE("%A", date) AS day_name, FORMAT_DATE("%a", date) AS day_name_abbr, EXTRACT(DAYOFWEEK FROM date) AS day_of_week, EXTRACT(DAY FROM date) AS day_of_month, EXTRACT(DAY FROM date) - EXTRACT(DAY FROM DATE_TRUNC(date, QUARTER)) + 1 AS day_of_quarter, EXTRACT(DAYOFYEAR FROM date) AS day_of_year, EXTRACT(WEEK FROM date) - EXTRACT(WEEK FROM DATE_TRUNC(date, MONTH)) + 1 AS week_of_month, CAST(FORMAT_DATE("%V", date) AS INT64) AS week_of_year, FORMAT_DATE("%G-W%V-%u", date) AS week_of_year_iso, EXTRACT(MONTH FROM date) AS month, FORMAT_DATE("%B", date) AS month_name, FORMAT_DATE("%b", date) AS month_name_abbr, EXTRACT(QUARTER FROM date) AS quarter, CONCAT("Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_name, EXTRACT(YEAR FROM date) AS year, DATE_TRUNC(date, WEEK(MONDAY)) AS start_of_week,DATE_TRUNC(date, WEEK(SATURDAY)) AS start_of_week_saturday, DATE_TRUNC(date, MONTH) AS start_of_month, DATE_ADD(DATE_TRUNC(date, MONTH), INTERVAL 14 DAY) AS mid_of_month, DATE_TRUNC(date, QUARTER) AS start_of_quarter, DATE_TRUNC(date, YEAR) AS start_of_year, DATE_ADD(DATE_TRUNC(date, WEEK(SATURDAY)), INTERVAL 6 DAY) AS end_of_week, LAST_DAY(date, MONTH) AS end_of_month, LAST_DAY(date, QUARTER) AS end_of_quarter, LAST_DAY(date, YEAR) AS end_of_year,     CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date), 10, 1),    DATE(EXTRACT(YEAR FROM date) - 1, 10, 1)) AS DATE) AS start_of_fiscal_year,CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date) + 1, 9, 30),     DATE(EXTRACT(YEAR FROM date), 9, 30) ) AS DATE) AS end_of_fiscal_year,FORMAT_DATE("%Y%m", date) AS yyyymm, FORMAT_DATE("%Y%m%d", date) AS yyyymmdd, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-", FORMAT_DATE("%b", date)) AS month_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-","W",CAST(FORMAT_DATE("%V", date) AS INT64)) AS week_desc, CASE WHEN EXTRACT(DAYOFWEEK FROM date) IN (6, 7) THEN TRUE ELSE FALSE END AS is_weekend, CASE WHEN EXTRACT(MONTH FROM date) IN (3, 4, 5) THEN "Spring" WHEN EXTRACT(MONTH FROM date) IN (6, 7, 8) THEN "Summer" WHEN EXTRACT(MONTH FROM date) IN (9, 10, 11) THEN "Autumn" WHEN EXTRACT(MONTH FROM date) IN (12, 1, 2) THEN "Winter" ELSE "Unknown" END season, holiday_name, holiday_country, special_day_name FROM date_range d LEFT JOIN (SELECT * FROM justfunctions.eu.date_holidays WHERE holiday_country=UPPER("' || country || '")) dh ON dh.holiday_date=d.date LEFT JOIN justfunctions.eu.date_special_days sd ON sd.special_day_date=d.date;';
+
+
+END;
+```
+**Example Query**:
+
+```sql
+CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test.date_calendar","2020-01-01","2023-01-01","GR")
+```
+
+**Example Output**:
+
+```
+- date_id: 20200101
+- date: 2020-01-01
+- epoch: 1577836800
+- day_suffix: 1th
+- day_name: Wednesday
+- day_name_abbr: Wed
+- day_of_week: 4
+- day_of_month: 1
+- day_of_quarter: 1
+- day_of_year: 1
+- week_of_month: 1
+- week_of_year: 1
+- week_of_year_iso: 2020-W01-3
+- month: 1
+- month_name: January
+- month_name_abbr: Jan
+- quarter: 1
+- quarter_name: Q1
+- year: 2020
+- start_of_week: 2019-12-30
+- start_of_week_saturday: 2019-12-28
+- start_of_month: 2020-01-01
+- mid_of_month: 2020-01-15
+- start_of_quarter: 2020-01-01
+- start_of_year: 2020-01-01
+- end_of_week: 2020-01-03
+- end_of_month: 2020-01-31
+- end_of_quarter: 2020-03-31
+- end_of_year: 2020-12-31
+- start_of_fiscal_year: 2019-10-01
+- end_of_fiscal_year: 2020-09-30
+- yyyymm: 202001
+- yyyymmdd: 20200101
+- month_desc: 2020-Jan
+- quarter_desc: 2020-Q1
+- week_desc: 2020-W1
+- is_weekend: FALSE
+- season: Winter
+- holiday_name: Πρωτοχρονιά
+- holiday_country: gr
+- special_day_name : New Year's Day
+
+```
+---
+## <a id='shift_date'></a>54. shift_date(date, years, months, days)
+
+- **Type**: SQL
+- **Tags**: date
+- **Region**: us,eu
+- **Description**: Shifts a <date> by adding or subtracting specified years, months, and days. Use minus (-) to subtract.
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.shift_date`(`date` DATE, `years` INT64, `months` INT64, `days` INT64) 
+  RETURNS DATE AS (DATE_ADD(
+  DATE_ADD(
+    DATE_ADD(
+      date,
+      INTERVAL years YEAR
+    ),
+    INTERVAL months MONTH
+  ),
+  INTERVAL days DAY
+)
+)
+  OPTIONS ( description = '''Shifts a <date> by adding or subtracting specified years, months, and days. Use minus (-) to subtract.''')
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.shift_date`("2023-01-01","-2","1","4")
+```
+
+**Example Output**:
+
+```
+2021-02-05
+```
+---
+## <a id='channel_attribution'></a>55. channel_attribution(source, medium, campaign_name)
+
+- **Type**: SQL
+- **Tags**: analytics, text
+- **Region**: us,eu
+- **Description**: Perform channel attribution from source, medium and campaign name.
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.channel_attribution`(`source` string, `medium` string, `campaign_name` string) 
+  RETURNS string AS (CASE
+  -------direct
+  WHEN  source IS NULL AND medium IS NULL THEN 'direct'
+  WHEN  source='' AND medium='' THEN 'direct'
+  WHEN  source IN ('(direct)','direct') AND medium IN ('(none)','none','(not set)','not set','') THEN 'direct'
+  
+  -------cross-network
+  WHEN REGEXP_CONTAINS(campaign_name, 'cross-network') THEN 'cross-network'
+  
+  -------paid-shopping
+  WHEN (
+    REGEXP_CONTAINS(
+      source,
+      'alibaba|amazon|google shopping|shopify|etsy|ebay|stripe|walmart'
+    )
+    OR REGEXP_CONTAINS(
+      campaign_name,
+      '^(.*(([^a-df-z]|^)shop|shopping).*)$'
+    )
+  )
+  AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid shopping'
+ 
+  -------paid search
+  WHEN REGEXP_CONTAINS(
+    source,
+    'baidu|bing|duckduckgo|ecosia|google|yahoo|yandex'
+  )
+  AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid search'
+  
+  -------paid social
+  WHEN REGEXP_CONTAINS(
+    source,
+    'badoo|facebook|fb|instagram|linkedin|pinterest|tiktok|twitter|whatsapp'
+  )
+  AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid social'
+
+  -------paid video
+  WHEN REGEXP_CONTAINS(
+    source,
+    'dailymotion|disneyplus|netflix|youtube|vimeo|twitch|vimeo|youtube'
+  )
+  AND REGEXP_CONTAINS(medium, '^(.*cp.*|ppc|retargeting|paid.*)$') THEN 'paid video'
+
+  -------display
+  WHEN medium IN (
+    'display',
+    'banner',
+    'expandable',
+    'interstitial',
+    'cpm'
+  ) THEN 'display'
+
+  -------paid other
+  WHEN REGEXP_CONTAINS(medium, r"^(.*cp.*|ppc|retargeting|paid.*)$")
+   THEN 'Paid Other'
+
+  -------organic shopping
+  WHEN REGEXP_CONTAINS(
+    source,
+    'alibaba|amazon|google shopping|shopify|etsy|ebay|stripe|walmart'
+  )
+  OR REGEXP_CONTAINS(
+    campaign_name,
+    '^(.*(([^a-df-z]|^)shop|shopping).*)$'
+  ) THEN 'organic shopping'
+  -------organic social
+  WHEN REGEXP_CONTAINS(
+    source,
+    'badoo|facebook|fb|instagram|linkedin|pinterest|tiktok|twitter|whatsapp'
+  )
+  OR medium IN (
+    'social',
+    'social-network',
+    'social-media',
+    'sm',
+    'social network',
+    'social media'
+  ) THEN 'organic social'
+  -------organic video
+  WHEN REGEXP_CONTAINS(
+    source,
+    'dailymotion|disneyplus|netflix|youtube|vimeo|twitch|vimeo|youtube'
+  )
+  OR REGEXP_CONTAINS(medium, '^(.*video.*)$') THEN 'organic video'
+  -------organic search
+  WHEN REGEXP_CONTAINS(
+    source,
+    'baidu|bing|duckduckgo|ecosia|google|yahoo|yandex'
+  )
+  OR medium = 'organic' THEN 'organic search'
+  -- Other
+  WHEN medium IN ("referral", "app", "link") THEN 'referral'
+  WHEN REGEXP_CONTAINS(source, 'email|e-mail|e_mail|e mail')
+  OR REGEXP_CONTAINS(medium, 'email|e-mail|e_mail|e mail') THEN 'email'
+  WHEN medium = 'affiliate' THEN 'affiliates'
+  WHEN medium = 'audio' THEN 'audio'
+  WHEN medium = 'sms' THEN 'sms'
+  WHEN REGEXP_CONTAINS(medium, r'push$|mobile|notification') THEN 'mobile push notifications'
+  ELSE 'unassigned'
+END
+)
+  OPTIONS ( description = '''Perform channel attribution from source, medium and campaign name.''')
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.channel_attribution`("shopify","paid","test")
+```
+
+**Example Output**:
+
+```
+paid shopping
 ```
 ---

@@ -1,0 +1,44 @@
+type: function_sql
+category:
+  - date
+tutorial:
+source:
+github:
+description: "Shifts a <date> by adding or subtracting specified years, months, and days. Use minus (-) to subtract."
+arguments:
+  - name: date
+    type: DATE
+    description:
+  - name: years
+    type: INT64
+    description:
+  - name: months
+    type: INT64
+    description:
+  - name: days
+    type: INT64
+    description:
+output:
+  name: date
+  type: DATE
+  description:
+examples:
+  - description: ""
+    arguments:
+      - 2023-01-01
+      - -2
+      - 1
+      - 4
+    output: "2021-02-05"
+    region: ALL
+code: |
+  DATE_ADD(
+    DATE_ADD(
+      DATE_ADD(
+        date,
+        INTERVAL years YEAR
+      ),
+      INTERVAL months MONTH
+    ),
+    INTERVAL days DAY
+  )

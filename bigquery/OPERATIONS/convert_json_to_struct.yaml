@@ -20,11 +20,8 @@ examples:
     arguments:
       - { "time": { "new_value": "17:00","old_value": "16:30" }, "price": { "new_value": "1","old_value": "2" } }
     output: |
-      time
-      {"new_value":"17:00","old_value":"16:30"}
-
-      price
-      {"new_value":"1","old_value":"2"}
+      - time: {"new_value":"17:00","old_value":"16:30"}
+      - price: {"new_value":"1","old_value":"2"}
     region: ALL
 code: |
   try {
