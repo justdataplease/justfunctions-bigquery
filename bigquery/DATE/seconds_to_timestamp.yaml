@@ -1,0 +1,22 @@
+type: function_sql
+category:
+  - date
+tutorial:
+source:
+github:
+description: "Converts the <seconds> to timestamp format '%Y-%m-%d %H:%M:%S'."
+arguments:
+  - name: seconds
+    type: INT64
+    description:
+output:
+  name: timestamp
+  type: TIMESTAMP
+  description:
+examples:
+  - description: ""
+    arguments:
+      - 1687613655
+    output: "2023-06-24 13:00:01 UTC"
+    region: ALL
+code: TIMESTAMP(FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', TIMESTAMP_SECONDS(seconds)))

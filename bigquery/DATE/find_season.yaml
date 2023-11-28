@@ -1,0 +1,41 @@
+type: function_sql
+category:
+  - date
+  - new
+tutorial:
+source:
+github:
+description: "Finds season name and start of season date for a given <date>."
+arguments:
+  - name: date
+    type: DATE
+    description:
+output:
+  name: season
+  type: STRUCT<season STRING, start_of_season DATE>
+  description:
+examples:
+  - description: ""
+    arguments:
+      - 2020-01-04
+    output: Winter | 2019-12-01
+    region: ALL
+code: |
+  CASE 
+    WHEN EXTRACT(MONTH FROM date) IN (3, 4, 5) 
+    THEN STRUCT("Spring" AS season, DATE(EXTRACT(YEAR FROM date), 3, 1) AS start_of_season)
+
+    WHEN EXTRACT(MONTH FROM date) IN (6, 7, 8) 
+    THEN STRUCT("Summer", DATE(EXTRACT(YEAR FROM date), 6, 1))
+
+    WHEN EXTRACT(MONTH FROM date) IN (9, 10, 11) 
+    THEN STRUCT("Autumn", DATE(EXTRACT(YEAR FROM date), 9, 1))
+
+    WHEN EXTRACT(MONTH FROM date) = 12 
+    THEN STRUCT("Winter", DATE(EXTRACT(YEAR FROM date), 12, 1))
+  
+    WHEN EXTRACT(MONTH FROM date) IN (1, 2) 
+    THEN STRUCT("Winter", DATE(EXTRACT(YEAR FROM date) - 1, 12, 1))
+
+    ELSE STRUCT("Unknown", NULL)
+  END

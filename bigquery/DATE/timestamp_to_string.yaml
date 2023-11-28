@@ -1,0 +1,22 @@
+type: function_sql
+category:
+  - date
+tutorial:
+source:
+github:
+description: "Converts the <timestamp> to string '%Y-%m-%d %H:%M:%S'."
+arguments:
+  - name: timestamp
+    type: TIMESTAMP
+    description:
+output:
+  name: string
+  type: STRING
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "2023-06-24 13:01:02 UTC"
+    output: "2023-06-24 13:01:02"
+    region: ALL
+code: FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', timestamp)

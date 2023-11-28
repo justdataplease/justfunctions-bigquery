@@ -1,0 +1,41 @@
+type: function_sql
+category:
+  - date
+  - new
+tutorial:
+source:
+github:
+description: "Finds if a <date> fall into cyber week as well as the name of the day (Thanksgiving, Black Friday, Thanksgiving Weekend, Cyber Monday)."
+arguments:
+  - name: date
+    type: DATE
+    description:
+output:
+  name: cyber
+  type: STRUCT<is_cyber_week INT64, day_name STRING>
+  description:
+examples:
+  - description: ""
+    arguments:
+      - 2023-11-24
+    output: 1 | Black Friday
+    region: ALL
+code: |
+  (
+    WITH calculated_dates AS (
+      SELECT 
+        DATE_ADD(DATE_TRUNC(DATE(EXTRACT(YEAR FROM date_to_check), 11, 1), MONTH), 
+          INTERVAL (26 - EXTRACT(DAYOFWEEK FROM DATE(EXTRACT(YEAR FROM date_to_check), 11, 1))) DAY) AS thanksgiving
+    )
+    SELECT 
+      STRUCT(
+      IF(date_to_check BETWEEN thanksgiving AND DATE_ADD(thanksgiving, INTERVAL 4 DAY), 1, 0),
+      CASE 
+        WHEN date_to_check = thanksgiving THEN 'Thanksgiving'
+        WHEN date_to_check = DATE_ADD(thanksgiving, INTERVAL 1 DAY) THEN 'Black Friday'
+        WHEN date_to_check = DATE_ADD(thanksgiving, INTERVAL 2 DAY) OR date_to_check = DATE_ADD(thanksgiving, INTERVAL 3 DAY) THEN 'Thanksgiving Weekend'
+        WHEN date_to_check = DATE_ADD(thanksgiving, INTERVAL 4 DAY) THEN 'Cyber Monday'
+        ELSE 'Not Cyber Week'
+      END)
+    FROM calculated_dates
+  )
