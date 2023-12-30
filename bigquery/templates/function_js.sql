@@ -1,2 +1,0 @@
-CREATE OR REPLACE FUNCTION `{{ project_id }}.{{ dataset_id }}.{{ function_name }}`({% for argument in arguments %}`{{ argument.name }}` {{ argument.type}}{% if not loop.last %}, {% endif %}{% endfor %}) RETURNS {{ output.type }}
-	LANGUAGE js AS r'''{{ code }}''' OPTIONS ( description = '''{{ description }}''' {% if libraries %} , library = [ {% for library in libraries %} "{{ library.cloudstorage_url }}"{% if not loop.last %}, {% endif %}{% endfor %} ] {% endif %} )
