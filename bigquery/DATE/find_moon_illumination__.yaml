@@ -1,0 +1,27 @@
+type: function_js
+category:
+  - date
+tutorial:
+source: https://github.com/cosinekitty/astronomy
+github:
+description: "Helper function for `find_moon_illumination`."
+arguments:
+  - name: date_string
+    type: STRING
+    description:
+output:
+  name: illumination
+  type: FLOAT64
+  description:
+examples:
+  - description: ""
+    arguments:
+      - "2090-01-16"
+    output: 99.17
+    region: ALL
+code: |
+  var phase = Astronomy.MoonPhase(date_string);
+  let illum = Astronomy.Illumination(Astronomy.Body.Moon, date_string);
+  return (illum.phase_fraction * 100).toFixed(2)
+libraries:
+  - cloudstorage_url: astronomy.js

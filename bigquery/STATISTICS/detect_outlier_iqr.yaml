@@ -1,0 +1,35 @@
+type: function_sql
+category:
+  - STATISTICS
+source:
+public: true
+description: "Detects if <value> is an outlier based on IQR method."
+arguments:
+  - name: value
+    type: FLOAT64
+    description:
+  - name: value_percentile_25
+    type: FLOAT64
+    description:
+  - name: value_percentile_75
+    type: FLOAT64
+    description:
+output:
+  name: is_outlier
+  type: INT64
+  description:
+examples:
+  - description: ""
+    arguments:
+      - 5
+      - 2
+      - 14
+    output: 0
+    region: ALL
+code: |
+      CASE WHEN 
+      value < value_percentile_25 - 1.5 * (value_percentile_75 - value_percentile_25)
+      OR value > value_percentile_75 + 1.5 * (value_percentile_75 - value_percentile_25)
+      THEN 1 ELSE 0 END
+
+

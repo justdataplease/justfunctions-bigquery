@@ -1,0 +1,61 @@
+type: procedure
+category:
+  - operations
+  - date
+  - featured
+  - new
+description: Generates a hour calendar table for a 24-hour day.
+arguments:
+  - name: table_name
+    type: string
+output:
+  name: hour_calendar
+  type: any type
+examples:
+  - description: Generate an hour calendar table
+    arguments:
+      - 'justfunctions.test.hour_calendar'
+    output: |
+      - hour_id: "00"
+      - hour_24: 0
+      - hour_12: 12
+      - am_pm: am
+      - is_business_hour: FALSE
+      - part_of_day: Night
+    region: ALL
+code: |
+    -- Drop the table if it exists
+    EXECUTE IMMEDIATE 'DROP TABLE IF EXISTS ' || table_name;
+
+    -- Create the hour_calendar table
+    EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (hour_id STRING NOT NULL, hour_24 INT64 NOT NULL, hour_12 INT64 NOT NULL, am_pm STRING NOT NULL, is_business_hour BOOL, part_of_day STRING);';
+
+    -- Populate the table with static insert statements
+    -- EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' (hour_id, hour_24, hour_12, am_pm, is_business_hour, part_of_day) WITH hours AS (SELECT hour, FORMAT("%02d", hour) as hour_id, CASE WHEN hour = 0 THEN 12 WHEN hour > 12 THEN hour - 12 ELSE hour END as hour_12, CASE WHEN hour < 12 THEN "am" ELSE "pm" END as am_pm FROM UNNEST(GENERATE_ARRAY(0, 23)) as hour) SELECT hour_id, hour, hour_12, am_pm, CASE WHEN hour_id BETWEEN "09" AND "17" THEN TRUE ELSE FALSE END as is_business_hour, CASE WHEN hour_id BETWEEN "00" AND "05" THEN "Night" WHEN hour_id BETWEEN "06" AND "11" THEN "Morning" WHEN hour_id BETWEEN "12" AND "17" THEN "Afternoon" ELSE "Evening" END as part_of_day FROM hours;';
+
+    EXECUTE IMMEDIATE 
+    'INSERT INTO ' || table_name || ' (hour_id, hour_24, hour_12, am_pm, is_business_hour, part_of_day) VALUES ' ||
+    '("00", 0, 12, "am", FALSE, "Night"), ' ||
+    '("01", 1, 1, "am", FALSE, "Night"), ' ||
+    '("02", 2, 2, "am", FALSE, "Night"), ' ||
+    '("03", 3, 3, "am", FALSE, "Night"), ' ||
+    '("04", 4, 4, "am", FALSE, "Night"), ' ||
+    '("05", 5, 5, "am", FALSE, "Night"), ' ||
+    '("06", 6, 6, "am", FALSE, "Morning"), ' ||
+    '("07", 7, 7, "am", TRUE, "Morning"), ' ||
+    '("08", 8, 8, "am", TRUE, "Morning"), ' ||
+    '("09", 9, 9, "am", TRUE, "Morning"), ' ||
+    '("10", 10, 10, "am", TRUE, "Morning"), ' ||
+    '("11", 11, 11, "am", TRUE, "Morning"), ' ||
+    '("12", 12, 12, "pm", TRUE, "Afternoon"), ' ||
+    '("13", 13, 1, "pm", TRUE, "Afternoon"), ' ||
+    '("14", 14, 2, "pm", TRUE, "Afternoon"), ' ||
+    '("15", 15, 3, "pm", TRUE, "Afternoon"), ' ||
+    '("16", 16, 4, "pm", TRUE, "Afternoon"), ' ||
+    '("17", 17, 5, "pm", TRUE, "Afternoon"), ' ||
+    '("18", 18, 6, "pm", FALSE, "Evening"), ' ||
+    '("19", 19, 7, "pm", FALSE, "Evening"), ' ||
+    '("20", 20, 8, "pm", FALSE, "Evening"), ' ||
+    '("21", 21, 9, "pm", FALSE, "Evening"), ' ||
+    '("22", 22, 10, "pm", FALSE, "Evening"), ' ||
+    '("23", 23, 11, "pm", FALSE, "Night");';

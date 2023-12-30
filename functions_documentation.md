@@ -55,7 +55,11 @@
 52. [generate_date_calendar(table_name, start_date, end_date)](#generate_date_calendar)
 53. [generate_date_calendar_with_holidays(table_name, start_date, end_date, country)](#generate_date_calendar_with_holidays)
 54. [shift_date(date, years, months, days)](#shift_date)
-55. [channel_attribution(source, medium, campaign_name)](#channel_attribution)
+55. [find_season(date)](#find_season)
+56. [find_cyber_week(date)](#find_cyber_week)
+57. [timestamp_to_string(timestamp)](#timestamp_to_string)
+58. [seconds_to_timestamp(seconds)](#seconds_to_timestamp)
+59. [channel_attribution(source, medium, campaign_name)](#channel_attribution)
 
 ---
 ## <a id='clean_url'></a>1. clean_url(url)
@@ -1938,17 +1942,17 @@ BEGIN
 EXECUTE IMMEDIATE 'DROP TABLE IF EXISTS ' || table_name;
 
 -- Create the date_calendar table
-EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (date_id INT64 NOT NULL, date DATE NOT NULL, epoch INT64 NOT NULL, day_suffix STRING NOT NULL, day_name STRING NOT NULL, day_name_abbr STRING NOT NULL, day_of_week INT64 NOT NULL, day_of_month INT64 NOT NULL, day_of_quarter INT64 NOT NULL, day_of_year INT64 NOT NULL, week_of_month INT64 NOT NULL, week_of_year INT64 NOT NULL, week_of_year_iso STRING NOT NULL, month_ INT64 NOT NULL, month_name STRING NOT NULL, month_name_abbr STRING NOT NULL, quarter INT64 NOT NULL, quarter_name STRING NOT NULL, year INT64 NOT NULL, start_of_week DATE NOT NULL,start_of_week_saturday DATE NOT NULL, start_of_month DATE NOT NULL, mid_of_month DATE NOT NULL, start_of_quarter DATE NOT NULL, start_of_year DATE NOT NULL, end_of_week DATE NOT NULL, end_of_month DATE NOT NULL, end_of_quarter DATE NOT NULL, end_of_year DATE NOT NULL,start_of_fiscal_year DATE NOT NULL,end_of_fiscal_year DATE NOT NULL, yyyymm STRING NOT NULL, yyyymmdd STRING NOT NULL, month_desc STRING, quarter_desc STRING, week_desc STRING, is_weekend BOOL NOT NULL, season STRING);';
+EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (date_id INT64 NOT NULL, date DATE NOT NULL, epoch INT64 NOT NULL, day_suffix STRING NOT NULL, day_name STRING NOT NULL, day_name_abbr STRING NOT NULL, day_of_week INT64 NOT NULL, day_of_month INT64 NOT NULL, day_of_quarter INT64 NOT NULL, day_of_year INT64 NOT NULL, week_of_month INT64 NOT NULL, week_of_year INT64 NOT NULL, week_of_year_iso STRING NOT NULL, month_ INT64 NOT NULL, month_name STRING NOT NULL, month_name_abbr STRING NOT NULL, quarter INT64 NOT NULL, quarter_name STRING NOT NULL, year INT64 NOT NULL, start_of_week DATE NOT NULL,start_of_week_saturday DATE NOT NULL, start_of_month DATE NOT NULL, start_of_midmonth DATE NOT NULL, start_of_quarter DATE NOT NULL, start_of_year DATE NOT NULL, end_of_week DATE NOT NULL, end_of_month DATE NOT NULL, end_of_quarter DATE NOT NULL, end_of_year DATE NOT NULL,start_of_fiscal_year DATE NOT NULL,end_of_fiscal_year DATE NOT NULL, yyyymm STRING NOT NULL, yyyymmdd STRING NOT NULL, month_desc STRING, quarter_desc STRING, week_desc STRING, is_weekend BOOL NOT NULL, season STRING, start_of_season DATE);';
 
 -- Populate the table
-EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' WITH date_range AS (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY("' || start_date || '","' || end_date  || '")) AS date) SELECT CAST(FORMAT_DATE("%Y%m%d", date) AS INT64) AS date_id, date AS date, UNIX_SECONDS(TIMESTAMP(date)) AS epoch, CONCAT(CAST(EXTRACT(DAY FROM date) AS STRING), "th") AS day_suffix, FORMAT_DATE("%A", date) AS day_name, FORMAT_DATE("%a", date) AS day_name_abbr, EXTRACT(DAYOFWEEK FROM date) AS day_of_week, EXTRACT(DAY FROM date) AS day_of_month, EXTRACT(DAY FROM date) - EXTRACT(DAY FROM DATE_TRUNC(date, QUARTER)) + 1 AS day_of_quarter, EXTRACT(DAYOFYEAR FROM date) AS day_of_year, EXTRACT(WEEK FROM date) - EXTRACT(WEEK FROM DATE_TRUNC(date, MONTH)) + 1 AS week_of_month, CAST(FORMAT_DATE("%V", date) AS INT64) AS week_of_year, FORMAT_DATE("%G-W%V-%u", date) AS week_of_year_iso, EXTRACT(MONTH FROM date) AS month, FORMAT_DATE("%B", date) AS month_name, FORMAT_DATE("%b", date) AS month_name_abbr, EXTRACT(QUARTER FROM date) AS quarter, CONCAT("Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_name, EXTRACT(YEAR FROM date) AS year, DATE_TRUNC(date, WEEK(MONDAY)) AS start_of_week,DATE_TRUNC(date, WEEK(SATURDAY)) AS start_of_week_saturday, DATE_TRUNC(date, MONTH) AS start_of_month, DATE_ADD(DATE_TRUNC(date, MONTH), INTERVAL 14 DAY) AS mid_of_month, DATE_TRUNC(date, QUARTER) AS start_of_quarter, DATE_TRUNC(date, YEAR) AS start_of_year, DATE_ADD(DATE_TRUNC(date, WEEK(SATURDAY)), INTERVAL 6 DAY) AS end_of_week, LAST_DAY(date, MONTH) AS end_of_month, LAST_DAY(date, QUARTER) AS end_of_quarter, LAST_DAY(date, YEAR) AS end_of_year,     CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date), 10, 1),    DATE(EXTRACT(YEAR FROM date) - 1, 10, 1)) AS DATE) AS start_of_fiscal_year,CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date) + 1, 9, 30),     DATE(EXTRACT(YEAR FROM date), 9, 30) ) AS DATE) AS end_of_fiscal_year,FORMAT_DATE("%Y%m", date) AS yyyymm, FORMAT_DATE("%Y%m%d", date) AS yyyymmdd, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-", FORMAT_DATE("%b", date)) AS month_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-","W",CAST(FORMAT_DATE("%V", date) AS INT64)) AS week_desc, CASE WHEN EXTRACT(DAYOFWEEK FROM date) IN (6, 7) THEN TRUE ELSE FALSE END AS is_weekend,CASE WHEN EXTRACT(MONTH FROM date) IN (3, 4, 5) THEN "Spring" WHEN EXTRACT(MONTH FROM date) IN (6, 7, 8) THEN "Summer" WHEN EXTRACT(MONTH FROM date) IN (9, 10, 11) THEN "Autumn" WHEN EXTRACT(MONTH FROM date) IN (12, 1, 2) THEN "Winter" ELSE "Unknown" END season FROM date_range;';
+EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' WITH date_range AS (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY("' || start_date || '","' || end_date  || '")) AS date) SELECT CAST(FORMAT_DATE("%Y%m%d", date) AS INT64) AS date_id, date AS date, UNIX_SECONDS(TIMESTAMP(date)) AS epoch, CONCAT(CAST(EXTRACT(DAY FROM date) AS STRING), "th") AS day_suffix, FORMAT_DATE("%A", date) AS day_name, FORMAT_DATE("%a", date) AS day_name_abbr, EXTRACT(DAYOFWEEK FROM date) AS day_of_week, EXTRACT(DAY FROM date) AS day_of_month, EXTRACT(DAY FROM date) - EXTRACT(DAY FROM DATE_TRUNC(date, QUARTER)) + 1 AS day_of_quarter, EXTRACT(DAYOFYEAR FROM date) AS day_of_year, EXTRACT(WEEK FROM date) - EXTRACT(WEEK FROM DATE_TRUNC(date, MONTH)) + 1 AS week_of_month, CAST(FORMAT_DATE("%V", date) AS INT64) AS week_of_year, FORMAT_DATE("%G-W%V-%u", date) AS week_of_year_iso, EXTRACT(MONTH FROM date) AS month, FORMAT_DATE("%B", date) AS month_name, FORMAT_DATE("%b", date) AS month_name_abbr, EXTRACT(QUARTER FROM date) AS quarter, CONCAT("Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_name, EXTRACT(YEAR FROM date) AS year, DATE_TRUNC(date, WEEK(MONDAY)) AS start_of_week,DATE_TRUNC(date, WEEK(SATURDAY)) AS start_of_week_saturday, DATE_TRUNC(date, MONTH) AS start_of_month, DATE_ADD(DATE_TRUNC(date, MONTH), INTERVAL 14 DAY) AS start_of_midmonth, DATE_TRUNC(date, QUARTER) AS start_of_quarter, DATE_TRUNC(date, YEAR) AS start_of_year, DATE_ADD(DATE_TRUNC(date, WEEK(SATURDAY)), INTERVAL 6 DAY) AS end_of_week, LAST_DAY(date, MONTH) AS end_of_month, LAST_DAY(date, QUARTER) AS end_of_quarter, LAST_DAY(date, YEAR) AS end_of_year,     CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date), 10, 1),    DATE(EXTRACT(YEAR FROM date) - 1, 10, 1)) AS DATE) AS start_of_fiscal_year,CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date) + 1, 9, 30),     DATE(EXTRACT(YEAR FROM date), 9, 30) ) AS DATE) AS end_of_fiscal_year,FORMAT_DATE("%Y%m", date) AS yyyymm, FORMAT_DATE("%Y%m%d", date) AS yyyymmdd, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-", FORMAT_DATE("%b", date)) AS month_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-","W",CAST(FORMAT_DATE("%V", date) AS INT64)) AS week_desc, CASE WHEN EXTRACT(DAYOFWEEK FROM date) IN (6, 7) THEN TRUE ELSE FALSE END AS is_weekend,justfunctions.eu.find_season(date).season season, justfunctions.eu.find_season(date).start_of_season start_of_season	FROM date_range;';
 
 END;
 ```
 **Example Query**:
 
 ```sql
-CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar","2020-01-01","2023-01-01")
+CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar","2020-01-01","2030-01-01")
 ```
 
 **Example Output**:
@@ -1976,7 +1980,7 @@ CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar
 - start_of_week: 2019-12-30
 - start_of_week_saturday: 2019-12-28
 - start_of_month: 2020-01-01
-- mid_of_month: 2020-01-15
+- start_of_midmonth: 2020-01-15
 - start_of_quarter: 2020-01-01
 - start_of_year: 2020-01-01
 - end_of_week: 2020-01-03
@@ -1991,6 +1995,7 @@ CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar
 - quarter_desc: 2020-Q1
 - week_desc: 2020-W1
 - is_weekend: FALSE
+- start_of_season: 2019-12-01
 - season: Winter
 
 ```
@@ -2000,12 +2005,12 @@ CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar
 - **Type**: PROCEDURE
 - **Tags**: operations, date, featured, new
 - **Region**: us,eu
-- **Description**: Generates a complete date calendar <table> with holidays for a given country and special days. Holidays are available for 2000-2030.
+- **Description**: Generates a complete date calendar <table> with holidays (holidays python) for a given country and special days. Holidays are available for 2000-2100.
 
 ```sql
 CREATE OR REPLACE PROCEDURE `justfunctions.eu.generate_date_calendar_with_holidays`(`table_name` string, `start_date` string, `end_date` string, `country` string)
 options(
-    description = '''Generates a complete date calendar <table> with holidays for a given country and special days. Holidays are available for 2000-2030.'''
+    description = '''Generates a complete date calendar <table> with holidays (holidays python) for a given country and special days. Holidays are available for 2000-2100.'''
 )
 BEGIN
 
@@ -2013,10 +2018,10 @@ BEGIN
 EXECUTE IMMEDIATE 'DROP TABLE IF EXISTS ' || table_name;
 
 -- Create the date_calendar table
-EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (date_id INT64 NOT NULL, date DATE NOT NULL, epoch INT64 NOT NULL, day_suffix STRING NOT NULL, day_name STRING NOT NULL, day_name_abbr STRING NOT NULL, day_of_week INT64 NOT NULL, day_of_month INT64 NOT NULL, day_of_quarter INT64 NOT NULL, day_of_year INT64 NOT NULL, week_of_month INT64 NOT NULL, week_of_year INT64 NOT NULL, week_of_year_iso STRING NOT NULL, month_ INT64 NOT NULL, month_name STRING NOT NULL, month_name_abbr STRING NOT NULL, quarter INT64 NOT NULL, quarter_name STRING NOT NULL, year INT64 NOT NULL, start_of_week DATE NOT NULL,start_of_week_saturday DATE NOT NULL, start_of_month DATE NOT NULL, mid_of_month DATE NOT NULL, start_of_quarter DATE NOT NULL, start_of_year DATE NOT NULL, end_of_week DATE NOT NULL, end_of_month DATE NOT NULL, end_of_quarter DATE NOT NULL, end_of_year DATE NOT NULL,start_of_fiscal_year DATE NOT NULL,end_of_fiscal_year DATE NOT NULL, yyyymm STRING NOT NULL, yyyymmdd STRING NOT NULL, month_desc STRING, quarter_desc STRING, week_desc STRING, is_weekend BOOL NOT NULL, season STRING, holiday_name STRING, holiday_country STRING, special_day_name STRING);';
+EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || ' (date_id INT64 NOT NULL, date DATE NOT NULL, epoch INT64 NOT NULL, day_suffix STRING NOT NULL, day_name STRING NOT NULL, day_name_abbr STRING NOT NULL, day_of_week INT64 NOT NULL, day_of_month INT64 NOT NULL, day_of_quarter INT64 NOT NULL, day_of_year INT64 NOT NULL, week_of_month INT64 NOT NULL, week_of_year INT64 NOT NULL, week_of_year_iso STRING NOT NULL, month_ INT64 NOT NULL, month_name STRING NOT NULL, month_name_abbr STRING NOT NULL, quarter INT64 NOT NULL, quarter_name STRING NOT NULL, year INT64 NOT NULL, start_of_week DATE NOT NULL,start_of_week_saturday DATE NOT NULL, start_of_month DATE NOT NULL, start_of_midmonth DATE NOT NULL, start_of_quarter DATE NOT NULL, start_of_year DATE NOT NULL, end_of_week DATE NOT NULL, end_of_month DATE NOT NULL, end_of_quarter DATE NOT NULL, end_of_year DATE NOT NULL,start_of_fiscal_year DATE NOT NULL,end_of_fiscal_year DATE NOT NULL, yyyymm STRING NOT NULL, yyyymmdd STRING NOT NULL, month_desc STRING, quarter_desc STRING, week_desc STRING, is_weekend BOOL NOT NULL, season STRING, start_of_season DATE, holiday_name STRING, holiday_country STRING, special_day_name STRING);';
 
 -- Populate the table
-EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' WITH date_range AS (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY("' || start_date || '","' || end_date  || '")) AS date) SELECT CAST(FORMAT_DATE("%Y%m%d", date) AS INT64) AS date_id, date AS date, UNIX_SECONDS(TIMESTAMP(date)) AS epoch, CONCAT(CAST(EXTRACT(DAY FROM date) AS STRING), "th") AS day_suffix, FORMAT_DATE("%A", date) AS day_name, FORMAT_DATE("%a", date) AS day_name_abbr, EXTRACT(DAYOFWEEK FROM date) AS day_of_week, EXTRACT(DAY FROM date) AS day_of_month, EXTRACT(DAY FROM date) - EXTRACT(DAY FROM DATE_TRUNC(date, QUARTER)) + 1 AS day_of_quarter, EXTRACT(DAYOFYEAR FROM date) AS day_of_year, EXTRACT(WEEK FROM date) - EXTRACT(WEEK FROM DATE_TRUNC(date, MONTH)) + 1 AS week_of_month, CAST(FORMAT_DATE("%V", date) AS INT64) AS week_of_year, FORMAT_DATE("%G-W%V-%u", date) AS week_of_year_iso, EXTRACT(MONTH FROM date) AS month, FORMAT_DATE("%B", date) AS month_name, FORMAT_DATE("%b", date) AS month_name_abbr, EXTRACT(QUARTER FROM date) AS quarter, CONCAT("Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_name, EXTRACT(YEAR FROM date) AS year, DATE_TRUNC(date, WEEK(MONDAY)) AS start_of_week,DATE_TRUNC(date, WEEK(SATURDAY)) AS start_of_week_saturday, DATE_TRUNC(date, MONTH) AS start_of_month, DATE_ADD(DATE_TRUNC(date, MONTH), INTERVAL 14 DAY) AS mid_of_month, DATE_TRUNC(date, QUARTER) AS start_of_quarter, DATE_TRUNC(date, YEAR) AS start_of_year, DATE_ADD(DATE_TRUNC(date, WEEK(SATURDAY)), INTERVAL 6 DAY) AS end_of_week, LAST_DAY(date, MONTH) AS end_of_month, LAST_DAY(date, QUARTER) AS end_of_quarter, LAST_DAY(date, YEAR) AS end_of_year,     CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date), 10, 1),    DATE(EXTRACT(YEAR FROM date) - 1, 10, 1)) AS DATE) AS start_of_fiscal_year,CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date) + 1, 9, 30),     DATE(EXTRACT(YEAR FROM date), 9, 30) ) AS DATE) AS end_of_fiscal_year,FORMAT_DATE("%Y%m", date) AS yyyymm, FORMAT_DATE("%Y%m%d", date) AS yyyymmdd, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-", FORMAT_DATE("%b", date)) AS month_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-","W",CAST(FORMAT_DATE("%V", date) AS INT64)) AS week_desc, CASE WHEN EXTRACT(DAYOFWEEK FROM date) IN (6, 7) THEN TRUE ELSE FALSE END AS is_weekend, CASE WHEN EXTRACT(MONTH FROM date) IN (3, 4, 5) THEN "Spring" WHEN EXTRACT(MONTH FROM date) IN (6, 7, 8) THEN "Summer" WHEN EXTRACT(MONTH FROM date) IN (9, 10, 11) THEN "Autumn" WHEN EXTRACT(MONTH FROM date) IN (12, 1, 2) THEN "Winter" ELSE "Unknown" END season, holiday_name, holiday_country, special_day_name FROM date_range d LEFT JOIN (SELECT * FROM justfunctions.eu.date_holidays WHERE holiday_country=UPPER("' || country || '")) dh ON dh.holiday_date=d.date LEFT JOIN justfunctions.eu.date_special_days sd ON sd.special_day_date=d.date;';
+EXECUTE IMMEDIATE 'INSERT INTO ' || table_name || ' WITH date_range AS (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY("' || start_date || '","' || end_date  || '")) AS date) SELECT CAST(FORMAT_DATE("%Y%m%d", date) AS INT64) AS date_id, date AS date, UNIX_SECONDS(TIMESTAMP(date)) AS epoch, CONCAT(CAST(EXTRACT(DAY FROM date) AS STRING), "th") AS day_suffix, FORMAT_DATE("%A", date) AS day_name, FORMAT_DATE("%a", date) AS day_name_abbr, EXTRACT(DAYOFWEEK FROM date) AS day_of_week, EXTRACT(DAY FROM date) AS day_of_month, EXTRACT(DAY FROM date) - EXTRACT(DAY FROM DATE_TRUNC(date, QUARTER)) + 1 AS day_of_quarter, EXTRACT(DAYOFYEAR FROM date) AS day_of_year, EXTRACT(WEEK FROM date) - EXTRACT(WEEK FROM DATE_TRUNC(date, MONTH)) + 1 AS week_of_month, CAST(FORMAT_DATE("%V", date) AS INT64) AS week_of_year, FORMAT_DATE("%G-W%V-%u", date) AS week_of_year_iso, EXTRACT(MONTH FROM date) AS month, FORMAT_DATE("%B", date) AS month_name, FORMAT_DATE("%b", date) AS month_name_abbr, EXTRACT(QUARTER FROM date) AS quarter, CONCAT("Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_name, EXTRACT(YEAR FROM date) AS year, DATE_TRUNC(date, WEEK(MONDAY)) AS start_of_week,DATE_TRUNC(date, WEEK(SATURDAY)) AS start_of_week_saturday, DATE_TRUNC(date, MONTH) AS start_of_month, DATE_ADD(DATE_TRUNC(date, MONTH), INTERVAL 14 DAY) AS start_of_midmonth, DATE_TRUNC(date, QUARTER) AS start_of_quarter, DATE_TRUNC(date, YEAR) AS start_of_year, DATE_ADD(DATE_TRUNC(date, WEEK(SATURDAY)), INTERVAL 6 DAY) AS end_of_week, LAST_DAY(date, MONTH) AS end_of_month, LAST_DAY(date, QUARTER) AS end_of_quarter, LAST_DAY(date, YEAR) AS end_of_year,     CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date), 10, 1),    DATE(EXTRACT(YEAR FROM date) - 1, 10, 1)) AS DATE) AS start_of_fiscal_year,CAST(IF(EXTRACT(MONTH FROM date) >= 10,     DATE(EXTRACT(YEAR FROM date) + 1, 9, 30),     DATE(EXTRACT(YEAR FROM date), 9, 30) ) AS DATE) AS end_of_fiscal_year,FORMAT_DATE("%Y%m", date) AS yyyymm, FORMAT_DATE("%Y%m%d", date) AS yyyymmdd, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-", FORMAT_DATE("%b", date)) AS month_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-Q", CAST(EXTRACT(QUARTER FROM date) AS STRING)) AS quarter_desc, CONCAT(CAST(EXTRACT(YEAR FROM date) AS STRING), "-","W",CAST(FORMAT_DATE("%V", date) AS INT64)) AS week_desc, CASE WHEN EXTRACT(DAYOFWEEK FROM date) IN (6, 7) THEN TRUE ELSE FALSE END AS is_weekend, justfunctions.eu.find_season(date).season season, justfunctions.eu.find_season(date).start_of_season start_of_season , holiday_name, holiday_country, special_day_name FROM date_range d LEFT JOIN (SELECT * FROM justfunctions.eu.date_holidays WHERE holiday_country=UPPER("' || country || '")) dh ON dh.holiday_date=d.date LEFT JOIN justfunctions.eu.date_special_days sd ON sd.special_day_date=d.date;';
 
 
 END;
@@ -2024,7 +2029,7 @@ END;
 **Example Query**:
 
 ```sql
-CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test.date_calendar","2020-01-01","2023-01-01","GR")
+CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test.date_calendar","2020-01-01","2030-01-01","GR")
 ```
 
 **Example Output**:
@@ -2052,7 +2057,7 @@ CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test
 - start_of_week: 2019-12-30
 - start_of_week_saturday: 2019-12-28
 - start_of_month: 2020-01-01
-- mid_of_month: 2020-01-15
+- start_of_midmonth: 2020-01-15
 - start_of_quarter: 2020-01-01
 - start_of_year: 2020-01-01
 - end_of_week: 2020-01-03
@@ -2068,6 +2073,7 @@ CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test
 - week_desc: 2020-W1
 - is_weekend: FALSE
 - season: Winter
+- start_of_season: 2019-12-01
 - holiday_name: Πρωτοχρονιά
 - holiday_country: gr
 - special_day_name : New Year's Day
@@ -2108,7 +2114,138 @@ SELECT `justfunctions.eu.shift_date`("2023-01-01","-2","1","4")
 2021-02-05
 ```
 ---
-## <a id='channel_attribution'></a>55. channel_attribution(source, medium, campaign_name)
+## <a id='find_season'></a>55. find_season(date)
+
+- **Type**: SQL
+- **Tags**: date, new
+- **Region**: us,eu
+- **Description**: Finds season name and start of season date for a given <date>.
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.find_season`(`date` DATE) 
+  RETURNS STRUCT<season STRING, start_of_season DATE> AS (CASE 
+  WHEN EXTRACT(MONTH FROM date) IN (3, 4, 5) 
+  THEN STRUCT("Spring" AS season, DATE(EXTRACT(YEAR FROM date), 3, 1) AS start_of_season)
+
+  WHEN EXTRACT(MONTH FROM date) IN (6, 7, 8) 
+  THEN STRUCT("Summer", DATE(EXTRACT(YEAR FROM date), 6, 1))
+
+  WHEN EXTRACT(MONTH FROM date) IN (9, 10, 11) 
+  THEN STRUCT("Autumn", DATE(EXTRACT(YEAR FROM date), 9, 1))
+
+  WHEN EXTRACT(MONTH FROM date) = 12 
+  THEN STRUCT("Winter", DATE(EXTRACT(YEAR FROM date), 12, 1))
+
+  WHEN EXTRACT(MONTH FROM date) IN (1, 2) 
+  THEN STRUCT("Winter", DATE(EXTRACT(YEAR FROM date) - 1, 12, 1))
+
+  ELSE STRUCT("Unknown", NULL)
+END
+)
+  OPTIONS ( description = '''Finds season name and start of season date for a given <date>.''')
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.find_season`("2020-01-04")
+```
+
+**Example Output**:
+
+```
+Winter | 2019-12-01
+```
+---
+## <a id='find_cyber_week'></a>56. find_cyber_week(date)
+
+- **Type**: SQL
+- **Tags**: date, new
+- **Region**: us,eu
+- **Description**: Finds if a <date> fall into cyber week as well as the name of the day (Thanksgiving, Black Friday, Thanksgiving Weekend, Cyber Monday).
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.find_cyber_week`(`date` DATE) 
+  RETURNS STRUCT<is_cyber_week INT64, day_name STRING> AS ((
+  WITH calculated_dates AS (
+    SELECT 
+      DATE_ADD(DATE_TRUNC(DATE(EXTRACT(YEAR FROM date), 11, 1), MONTH), 
+        INTERVAL (26 - EXTRACT(DAYOFWEEK FROM DATE(EXTRACT(YEAR FROM date), 11, 1))) DAY) AS thanksgiving
+  )
+  SELECT 
+    STRUCT(
+    IF(date BETWEEN thanksgiving AND DATE_ADD(thanksgiving, INTERVAL 4 DAY), 1, 0),
+    CASE 
+      WHEN date = thanksgiving THEN 'Thanksgiving'
+      WHEN date = DATE_ADD(thanksgiving, INTERVAL 1 DAY) THEN 'Black Friday'
+      WHEN date = DATE_ADD(thanksgiving, INTERVAL 2 DAY) OR date = DATE_ADD(thanksgiving, INTERVAL 3 DAY) THEN 'Thanksgiving Weekend'
+      WHEN date = DATE_ADD(thanksgiving, INTERVAL 4 DAY) THEN 'Cyber Monday'
+      ELSE NULL
+    END)
+  FROM calculated_dates
+))
+  OPTIONS ( description = '''Finds if a <date> fall into cyber week as well as the name of the day (Thanksgiving, Black Friday, Thanksgiving Weekend, Cyber Monday).''')
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.find_cyber_week`("2023-11-24")
+```
+
+**Example Output**:
+
+```
+1 | Black Friday
+```
+---
+## <a id='timestamp_to_string'></a>57. timestamp_to_string(timestamp)
+
+- **Type**: SQL
+- **Tags**: date
+- **Region**: us,eu
+- **Description**: Converts the <timestamp> to string '%Y-%m-%d %H:%M:%S'.
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.timestamp_to_string`(`timestamp` TIMESTAMP) 
+  RETURNS STRING AS (FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', timestamp))
+  OPTIONS ( description = '''Converts the <timestamp> to string '%Y-%m-%d %H:%M:%S'.''')
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.timestamp_to_string`("2023-06-24 13:01:02 UTC")
+```
+
+**Example Output**:
+
+```
+2023-06-24 13:01:02
+```
+---
+## <a id='seconds_to_timestamp'></a>58. seconds_to_timestamp(seconds)
+
+- **Type**: SQL
+- **Tags**: date
+- **Region**: us,eu
+- **Description**: Converts the <seconds> to timestamp format '%Y-%m-%d %H:%M:%S'.
+
+```sql
+CREATE OR REPLACE FUNCTION `justfunctions.eu.seconds_to_timestamp`(`seconds` INT64) 
+  RETURNS TIMESTAMP AS (TIMESTAMP(FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', TIMESTAMP_SECONDS(seconds))))
+  OPTIONS ( description = '''Converts the <seconds> to timestamp format '%Y-%m-%d %H:%M:%S'.''')
+```
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.seconds_to_timestamp`("1687613655")
+```
+
+**Example Output**:
+
+```
+2023-06-24 13:00:01 UTC
+```
+---
+## <a id='channel_attribution'></a>59. channel_attribution(source, medium, campaign_name)
 
 - **Type**: SQL
 - **Tags**: analytics, text

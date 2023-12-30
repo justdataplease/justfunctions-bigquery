@@ -24,18 +24,18 @@ code: |
   (
     WITH calculated_dates AS (
       SELECT 
-        DATE_ADD(DATE_TRUNC(DATE(EXTRACT(YEAR FROM date_to_check), 11, 1), MONTH), 
-          INTERVAL (26 - EXTRACT(DAYOFWEEK FROM DATE(EXTRACT(YEAR FROM date_to_check), 11, 1))) DAY) AS thanksgiving
+        DATE_ADD(DATE_TRUNC(DATE(EXTRACT(YEAR FROM date), 11, 1), MONTH), 
+          INTERVAL (26 - EXTRACT(DAYOFWEEK FROM DATE(EXTRACT(YEAR FROM date), 11, 1))) DAY) AS thanksgiving
     )
     SELECT 
       STRUCT(
-      IF(date_to_check BETWEEN thanksgiving AND DATE_ADD(thanksgiving, INTERVAL 4 DAY), 1, 0),
+      IF(date BETWEEN thanksgiving AND DATE_ADD(thanksgiving, INTERVAL 4 DAY), 1, 0),
       CASE 
-        WHEN date_to_check = thanksgiving THEN 'Thanksgiving'
-        WHEN date_to_check = DATE_ADD(thanksgiving, INTERVAL 1 DAY) THEN 'Black Friday'
-        WHEN date_to_check = DATE_ADD(thanksgiving, INTERVAL 2 DAY) OR date_to_check = DATE_ADD(thanksgiving, INTERVAL 3 DAY) THEN 'Thanksgiving Weekend'
-        WHEN date_to_check = DATE_ADD(thanksgiving, INTERVAL 4 DAY) THEN 'Cyber Monday'
-        ELSE 'Not Cyber Week'
+        WHEN date = thanksgiving THEN 'Thanksgiving'
+        WHEN date = DATE_ADD(thanksgiving, INTERVAL 1 DAY) THEN 'Black Friday'
+        WHEN date = DATE_ADD(thanksgiving, INTERVAL 2 DAY) OR date = DATE_ADD(thanksgiving, INTERVAL 3 DAY) THEN 'Thanksgiving Weekend'
+        WHEN date = DATE_ADD(thanksgiving, INTERVAL 4 DAY) THEN 'Cyber Monday'
+        ELSE NULL
       END)
     FROM calculated_dates
   )

@@ -1,0 +1,26 @@
+type: function_sql
+category:
+  - date
+  - new
+tutorial:
+source: https://github.com/cosinekitty/astronomy
+github:
+description: "Finds how bright the Moon is at a specific <date> or better the fraction or percentage of the Moon's visible surface that is illuminated by the Sun at a specific <date>. For example, during a full moon, the illumination is near 100, while during a new moon, it is close to 0"
+arguments:
+  - name: date
+    type: DATE
+    description:
+output:
+  name: illumination
+  type: FLOAT64
+  description:
+examples:
+  - description: ""
+    arguments:
+      - 2090-01-16
+    output: 1
+    region: ALL
+code: |
+  _project_id_._dataset_id_.find_moon_illumination__(
+        CAST(date AS STRING)
+  )

@@ -1,0 +1,53 @@
+type: function_sql
+category:
+  - operations
+  - new
+  - featured
+tutorial:
+source: https://github.com/dbt-labs/dbt-core/issues/1082
+description: Generates a DBT schema.yml using the information_schema of the generated tables.
+arguments:
+  - name: project_id
+    type: string
+  - name: dataset_id
+    type: string
+output:
+  name: yaml_schema
+  type: string
+examples:
+  - description: ""
+    arguments:
+      - 'justfunctions'
+      - 'eu'
+    output: 'version: 2
+
+              models:
+                - name: country_distinct
+                  columns:
+                    - name: service_country
+                    - name: official_name
+                    - name: alpha_2
+              '
+    region: ALL
+code: |
+  (with columns as (
+      select '- name: ' || column_name || '' as column_statement,
+          table_name
+      from `_project_id_._dataset_id_`.INFORMATION_SCHEMA.COLUMNS
+  
+  ),
+  tables as (
+  select table_name,
+  "  - name: " || table_name || "\n" ||
+  "    columns:\n" ||
+  string_agg('      ' || column_statement, "\n") as yml_file
+  from columns
+  group by table_name
+  order by table_name
+  )
+  select
+  "version: 2\n" ||
+  "\n" ||
+  "models:\n" ||
+  string_agg(yml_file, "\n") as yml_file
+  from tables)

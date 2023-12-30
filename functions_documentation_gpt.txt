@@ -55,7 +55,11 @@
 52. [generate_date_calendar(table_name, start_date, end_date)](#generate_date_calendar)
 53. [generate_date_calendar_with_holidays(table_name, start_date, end_date, country)](#generate_date_calendar_with_holidays)
 54. [shift_date(date, years, months, days)](#shift_date)
-55. [channel_attribution(source, medium, campaign_name)](#channel_attribution)
+55. [find_season(date)](#find_season)
+56. [find_cyber_week(date)](#find_cyber_week)
+57. [timestamp_to_string(timestamp)](#timestamp_to_string)
+58. [seconds_to_timestamp(seconds)](#seconds_to_timestamp)
+59. [channel_attribution(source, medium, campaign_name)](#channel_attribution)
 
 ---
 ## <a id='clean_url'></a>1. clean_url(url)
@@ -1090,7 +1094,7 @@ SELECT `justfunctions.eu.seconds_to_date`("1687613655")
 **Example Query**:
 
 ```sql
-CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar","2020-01-01","2023-01-01")
+CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar","2020-01-01","2030-01-01")
 ```
 
 **Example Output**:
@@ -1118,7 +1122,7 @@ CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar
 - start_of_week: 2019-12-30
 - start_of_week_saturday: 2019-12-28
 - start_of_month: 2020-01-01
-- mid_of_month: 2020-01-15
+- start_of_midmonth: 2020-01-15
 - start_of_quarter: 2020-01-01
 - start_of_year: 2020-01-01
 - end_of_week: 2020-01-03
@@ -1133,6 +1137,7 @@ CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar
 - quarter_desc: 2020-Q1
 - week_desc: 2020-W1
 - is_weekend: FALSE
+- start_of_season: 2019-12-01
 - season: Winter
 
 ```
@@ -1142,12 +1147,12 @@ CALL `justfunctions.eu.generate_date_calendar`("justfunctions.test.date_calendar
 - **Type**: PROCEDURE
 - **Tags**: operations, date, featured, new
 - **Region**: us,eu
-- **Description**: Generates a complete date calendar <table> with holidays for a given country and special days. Holidays are available for 2000-2030.
+- **Description**: Generates a complete date calendar <table> with holidays (holidays python) for a given country and special days. Holidays are available for 2000-2100.
 
 **Example Query**:
 
 ```sql
-CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test.date_calendar","2020-01-01","2023-01-01","GR")
+CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test.date_calendar","2020-01-01","2030-01-01","GR")
 ```
 
 **Example Output**:
@@ -1175,7 +1180,7 @@ CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test
 - start_of_week: 2019-12-30
 - start_of_week_saturday: 2019-12-28
 - start_of_month: 2020-01-01
-- mid_of_month: 2020-01-15
+- start_of_midmonth: 2020-01-15
 - start_of_quarter: 2020-01-01
 - start_of_year: 2020-01-01
 - end_of_week: 2020-01-03
@@ -1191,6 +1196,7 @@ CALL `justfunctions.eu.generate_date_calendar_with_holidays`("justfunctions.test
 - week_desc: 2020-W1
 - is_weekend: FALSE
 - season: Winter
+- start_of_season: 2019-12-01
 - holiday_name: Πρωτοχρονιά
 - holiday_country: gr
 - special_day_name : New Year's Day
@@ -1216,7 +1222,83 @@ SELECT `justfunctions.eu.shift_date`("2023-01-01","-2","1","4")
 2021-02-05
 ```
 ---
-## <a id='channel_attribution'></a>55. channel_attribution(source, medium, campaign_name)
+## <a id='find_season'></a>55. find_season(date)
+
+- **Type**: SQL
+- **Tags**: date, new
+- **Region**: us,eu
+- **Description**: Finds season name and start of season date for a given <date>.
+
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.find_season`("2020-01-04")
+```
+
+**Example Output**:
+
+```
+Winter | 2019-12-01
+```
+---
+## <a id='find_cyber_week'></a>56. find_cyber_week(date)
+
+- **Type**: SQL
+- **Tags**: date, new
+- **Region**: us,eu
+- **Description**: Finds if a <date> fall into cyber week as well as the name of the day (Thanksgiving, Black Friday, Thanksgiving Weekend, Cyber Monday).
+
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.find_cyber_week`("2023-11-24")
+```
+
+**Example Output**:
+
+```
+1 | Black Friday
+```
+---
+## <a id='timestamp_to_string'></a>57. timestamp_to_string(timestamp)
+
+- **Type**: SQL
+- **Tags**: date
+- **Region**: us,eu
+- **Description**: Converts the <timestamp> to string '%Y-%m-%d %H:%M:%S'.
+
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.timestamp_to_string`("2023-06-24 13:01:02 UTC")
+```
+
+**Example Output**:
+
+```
+2023-06-24 13:01:02
+```
+---
+## <a id='seconds_to_timestamp'></a>58. seconds_to_timestamp(seconds)
+
+- **Type**: SQL
+- **Tags**: date
+- **Region**: us,eu
+- **Description**: Converts the <seconds> to timestamp format '%Y-%m-%d %H:%M:%S'.
+
+**Example Query**:
+
+```sql
+SELECT `justfunctions.eu.seconds_to_timestamp`("1687613655")
+```
+
+**Example Output**:
+
+```
+2023-06-24 13:00:01 UTC
+```
+---
+## <a id='channel_attribution'></a>59. channel_attribution(source, medium, campaign_name)
 
 - **Type**: SQL
 - **Tags**: analytics, text

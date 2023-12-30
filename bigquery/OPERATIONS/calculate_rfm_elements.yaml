@@ -1,0 +1,33 @@
+type: function_sql
+category:
+  - operations
+  - new
+  - featured
+tutorial:
+source: https://github.com/dbt-labs/dbt-core/issues/1082
+description: Generates a DBT schema.yml using the information_schema of the generated tables.
+arguments:
+  - name: project_id
+    type: string
+  - name: dataset_id
+    type: string
+output:
+  name: yaml_schema
+  type: string
+examples:
+  - description: ""
+    arguments:
+      - 'justfunctions'
+      - 'eu'
+    output: 'version: 2
+
+              models:
+                - name: country_distinct
+                  columns:
+                    - name: service_country
+                    - name: official_name
+                    - name: alpha_2
+              '
+    region: ALL
+code: |
+  (generate_dbt_yml_schema.yaml)
